@@ -5,7 +5,7 @@ import { isRight } from 'fp-ts/Either';
 import { GitHub } from '@actions/github/lib/utils';
 import * as github from '@actions/github';
 
-const Matcher = t.partial({
+const MatcherFields = t.partial({
   title: t.string,
   body: t.string,
   comment: t.string,
@@ -29,13 +29,21 @@ const Matcher = t.partial({
   ]),
 });
 
+const Include = t.intersection([
+  MatcherFields,
+  t.partial({
+    mode: t.union([t.literal('ANY'), t.literal('ALL')]),
+  }),
+]);
+
 const Label = t.intersection([
   t.type({
     label: t.string,
   }),
   t.partial({
     sync: t.boolean,
-    matcher: Matcher,
+    include: Include,
+    exclude: MatcherFields,
   }),
 ]);
 
@@ -70,7 +78,8 @@ const Config = t.intersection([
   }),
 ]);
 
-export type Matcher = t.TypeOf<typeof Matcher>;
+export type MatcherFields = t.TypeOf<typeof MatcherFields>;
+export type Include = t.TypeOf<typeof Include>;
 export type Label = t.TypeOf<typeof Label>;
 export type Check = t.TypeOf<typeof Check>;
 export type Config = t.TypeOf<typeof Config>;

@@ -1,84 +1,5 @@
-import { Config } from '../config';
-import { GitHub } from '@actions/github/lib/utils';
-import * as github from '@actions/github';
+import { MatcherFields } from '../config';
 import { Minimatch } from 'minimatch';
-
-/**
- * Type-safe FileMatcher for convenience.
- */
-interface FileMatcher {
-  label: string;
-  any: string[];
-  all: string[];
-  count?: FileCountMatcher;
-}
-
-interface FileCountMatcher {
-  lte?: number;
-  gte?: number;
-  eq?: number;
-  neq?: number;
-}
-
-/**
- * Get a type-safe FileMatcher
- */
-function getMatchers(config: Config): FileMatcher[] {
-  return config
-    .labels!.filter((value) => {
-      if (Array.isArray(value.matcher?.files)) {
-        return value.matcher?.files.length;
-      }
-
-      return value.matcher?.files;
-    })
-    .map(({ label, matcher }) => {
-      const files = matcher!.files!;
-      if (typeof files === 'string') {
-        return {
-          label,
-          any: [files],
-          all: [],
-        };
-      }
-
-      if (Array.isArray(files)) {
-        return {
-          label,
-          any: files,
-          all: [],
-        };
-      }
-
-      return {
-        label,
-        any: files.any || [],
-        all: files.all || [],
-        count: {
-          lte: files.count?.lte,
-          gte: files.count?.gte,
-          eq: files.count?.eq,
-          neq: files.count?.neq,
-        },
-      };
-    })
-    .filter(({ any, all, count }) => {
-      return any.length || all.length || count?.lte || count?.gte || count?.eq || count?.neq;
-    });
-}
-
-async function getFiles(client: InstanceType<typeof GitHub>, pr_number: number): Promise<string[]> {
-  const responses = await client.paginate(
-    client.rest.pulls.listFiles.endpoint.merge({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      pull_number: pr_number,
-    }),
-  );
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return responses.map((c: any) => c.filename);
-}
 
 /**
  * if globs is empty = matched
@@ -107,6 +28,10 @@ function anyMatch(files: string[], globs: string[]): boolean {
  * if globs is not empty, all files must match
  */
 function allMatch(files: string[], globs: string[]): boolean {
+  if (!globs.length) {
+    return true;
+  }
+
   const matchers = globs.map((g) => new Minimatch(g));
 
   for (const matcher of matchers) {
@@ -118,6 +43,13 @@ function allMatch(files: string[], globs: string[]): boolean {
   }
 
   return true;
+}
+
+interface FileCountMatcher {
+  lte?: number;
+  gte?: number;
+  eq?: number;
+  neq?: number;
 }
 
 /**
@@ -138,24 +70,23 @@ function countMatch(files: string[], count?: FileCountMatcher): boolean {
   );
 }
 
-export default async function match(client: InstanceType<typeof GitHub>, config: Config): Promise<string[]> {
-  const pr_number = github.context.payload.pull_request?.number;
+export function test(fields: MatcherFields, files: string[]): boolean {
+  const filesField = fields.files;
 
-  if (!pr_number) {
-    return [];
+  if (typeof filesField === 'string') {
+    return anyMatch(files, [filesField]);
   }
 
-  const matchers = getMatchers(config);
-
-  if (!matchers.length) {
-    return [];
+  if (Array.isArray(filesField)) {
+    return anyMatch(files, filesField);
   }
 
-  const files = await getFiles(client, pr_number);
+  if (filesField) {
+    const anyGlobs = filesField.any ?? [];
+    const allGlobs = filesField.all ?? [];
+    const count = filesField.count;
+    return anyMatch(files, anyGlobs) && allMatch(files, allGlobs) && countMatch(files, count);
+  }
 
-  return matchers
-    .filter((matcher) => {
-      return allMatch(files, matcher.all) && anyMatch(files, matcher.any) && countMatch(files, matcher.count);
-    })
-    .map((value) => value.label);
+  return false;
 }

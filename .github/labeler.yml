@@ -2,69 +2,69 @@ version: v1
 
 labels:
   - label: 'feat'
-    matcher:
+    include:
       title: '^feat:.*'
       branch: '^feat/.*'
       commits: '^feat:.*'
 
   - label: dependabot
-    matcher:
+    include:
       title: '^chore(deps).*'
       branch: '^dependabot/.*'
       commits: '^chore(deps).*'
 
   - label: 'fix'
-    matcher:
+    include:
       title: '^fix:.*'
       branch: '^fix/.*'
       commits: '^fix:.*'
 
   - label: 'chore'
-    matcher:
+    include:
       title: "^chore(\\((deps|ci)\\))?:.*"
       branch: '^chore/.*'
       commits: "^chore(\\((deps|ci)\\))?:.*"
 
   - label: 'chore'
-    matcher:
+    include:
       title: "^bump(\\((deps|ci)\\))?:.*"
 
   - label: 'docs'
-    matcher:
+    include:
       title: '^docs:.*'
       branch: '^docs/.*'
       commits: '^docs:.*'
 
   - label: 'test:labeler'
     sync: true
-    matcher:
+    include:
       files: '.github/labeler.yml'
 
   - label: 'test:dist'
     sync: true
-    matcher:
+    include:
       files: ['dist/*']
 
   - label: 'test:tests'
     sync: true
-    matcher:
+    include:
       files: ['__tests__/matcher/**', '__tests__/*.ts']
 
   - label: 'test:body'
-    matcher:
+    include:
       body: "(\\n|.)*- \\[x\\] test(\\n|.)*"
 
   - label: 'test:comment'
-    matcher:
+    include:
       comment: "# \\[Codecov\\] .*"
 
   - label: 'test:stale'
-    matcher:
+    include:
       comment: '/stale'
 
   - label: 'test: s'
     sync: true
-    matcher:
+    include:
       files:
         count:
           gte: 1
@@ -72,7 +72,7 @@ labels:
 
   - label: 'test: m'
     sync: true
-    matcher:
+    include:
       files:
         count:
           gte: 5
@@ -80,26 +80,26 @@ labels:
 
   - label: 'test: l'
     sync: true
-    matcher:
+    include:
       files:
         count:
           gte: 11
 
   - label: 'Maintainer'
-    matcher:
+    include:
       author:
         - fuxingloh
 
   - label: 'Owner'
-    matcher:
+    include:
       author: fuxingloh
 
   - label: 'branch: main'
-    matcher:
+    include:
       baseBranch: main
 
   - label: 'branch: release'
-    matcher:
+    include:
       baseBranch: '^release/.*'
 
 checks:
