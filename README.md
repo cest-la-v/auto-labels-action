@@ -11,9 +11,10 @@ Optionally, generate a status check based on the labels.
 ## Features
 
 - Single compiled javascript file, extremely fast. Use fewer credits!
-- Append based labeler, using `.github/labeler.yml` as config.
-- Automatically fail if `labeler.yml` is malformed, type-checked.
-- Set label to sync for conditional labeling, removed if condition failed.
+- Append based labeler, using `.github/labels.yml` as config.
+- Automatically fail if `labels.yml` is malformed, type-checked.
+- `removeOnMismatch: true` for conditional labeling — label is removed when the condition no longer matches.
+- `include` / `exclude` fields with optional `mode: ANY | ALL` for fine-grained control.
 - Regex Matcher:
   - PR/Issue title
   - PR/Issue body
@@ -29,10 +30,12 @@ Optionally, generate a status check based on the labels.
 - Generate status checks:
   - Any label match
   - All label match
+  - None label match
+- Post comments on issues or pull requests
 
 ## Usage
 
-#### `.github/workflows/labeler.yml`
+#### `.github/workflows/labels.yml`
 
 ```yml
 on:
@@ -70,22 +73,22 @@ jobs:
       - uses: cest-la-v/auto-labels-action@v1 # v1
         with:
           github-token: ${{secrets.GITHUB_TOKEN}} # optional, default to '${{ github.token }}'
-          config-path: .github/labeler.yml # optional, default to '.github/labeler.yml'
+          config-path: .github/labels.yml # optional, default to '.github/labels.yml'
           config-repo: my-org/my-repo # optional, default to '${{ github.repository }}'
 ```
 
-#### `.github/labeler.yml`
+#### `.github/labels.yml`
 
 ```yml
-# .github/labeler.yml
+# .github/labels.yml
 
 version: v1
 
 labels:
   - label: 'feat'
-    sync: true # remove label if match failed, default: false (pull_request/issue only)
-    matcher:
-      # Matcher will match on any 8 matchers
+    removeOnMismatch: true # remove label if include no longer matches, default: false (pull_request/issue only)
+    include:
+      mode: ANY # ANY: at least one field must match. ALL (default): all defined fields must match.
       title: '^feat:.*'
       body: '/feat'
       comment: '/feat'
@@ -101,6 +104,10 @@ labels:
         count:
           gte: 1
           lte: 1000
+    exclude:
+      # exclude overrides include — if any exclude field matches, the label is NOT added
+      author:
+        - dependabot[bot]
 
 # Optional, if you want labels to generate a success/failure status check
 checks:
@@ -140,35 +147,39 @@ jobs:
       - uses: cest-la-v/auto-labels-action@v1
 ```
 
-#### `.github/labeler.yml`
+#### `.github/labels.yml`
 
 ```yml
 version: v1
 
 labels:
   - label: 'feat'
-    matcher:
+    include:
+      mode: ANY
       title: '^feat: .*'
       commits: '^feat: .*'
 
   - label: 'fix'
-    matcher:
+    include:
+      mode: ANY
       title: '^fix: .*'
       commits: '^fix: .*'
 
   - label: 'chore'
-    matcher:
+    include:
+      mode: ANY
       title: '^chore: .*'
       commits: '^chore: .*'
 
   - label: 'docs'
-    matcher:
+    include:
+      mode: ANY
       title: '^docs: .*'
       commits: '^docs: .*'
 
 checks:
   - context: 'Semantic Pull Request'
-    url: 'https://github.com/cest-la-v/auto-labels-action/blob/main/.github/labeler.yml'
+    url: 'https://github.com/cest-la-v/auto-labels-action/blob/main/.github/labels.yml'
     description:
       success: Ready for review & merge.
       failure: Missing semantic label for merge.
@@ -201,26 +212,28 @@ jobs:
       - uses: cest-la-v/auto-labels-action@v1
 ```
 
-#### `.github/labeler.yml`
+#### `.github/labels.yml`
 
 ```yml
 version: v1
 
 labels:
   - label: 'feat'
-    matcher:
+    include:
+      mode: ANY
       title: '^feat:.*'
       branch: '^feat/.*'
       commits: '^feat:.*'
 
   - label: 'fix'
-    matcher:
+    include:
+      mode: ANY
       title: '^fix:.*'
       branch: '^fix/.*'
       commits: '^fix:.*'
 
   - label: 'release'
-    matcher:
+    include:
       baseBranch: '^release/.*'
 ```
 
@@ -244,14 +257,14 @@ jobs:
       - uses: cest-la-v/auto-labels-action@v1
 ```
 
-#### `.github/labeler.yml`
+#### `.github/labels.yml`
 
 ```yml
 version: v1
 
 labels:
   - label: 'bug'
-    matcher:
+    include:
       body: "(\\n|.)*- \\[x\\] bug(\\n|.)*"
 ```
 
@@ -275,18 +288,18 @@ jobs:
       - uses: cest-la-v/auto-labels-action@v1
 ```
 
-#### `.github/labeler.yml`
+#### `.github/labels.yml`
 
 ```yml
 version: v1
 
 labels:
   - label: 'coverage'
-    matcher:
+    include:
       comment: "# \\[Codecov\\] .*"
 
   - label: 'stale'
-    matcher:
+    include:
       comment: '/stale'
 ```
 
@@ -295,35 +308,60 @@ labels:
 ## Configuration
 
 Once you've added cest-la-v/auto-labels-action to your repository,
-it must be enabled by adding a `.github/labeler.yml` configuration file to the repository.
+it must be enabled by adding a `.github/labels.yml` configuration file to the repository.
 If you want to use a configuration file shared across multiple repositories,
-you can set the`config-repo` input to point to a different repository.
+you can set the `config-repo` input to point to a different repository.
 However, make sure to set a `github-token` that has permissions to access the provided repository,
 as the default `GITHUB_TOKEN` only has access to the repository the action is running in.
 
+> The full config schema (all fields with descriptions) is in [docs/labels.schema.json](docs/labels.schema.json).
+
+## Labels
+
+Each entry in `labels` defines when a label is added or removed.
+
+```yml
+labels:
+  - label: 'my-label'       # required — GitHub label name
+    removeOnMismatch: true  # optional (default: false) — remove when include no longer matches
+    include:                # when this matches, add the label (a label with no include is never added)
+      mode: ANY             # ANY = at least one field must match; ALL (default) = all fields must match
+      title: '^feat:.*'
+    exclude:                # when this matches, skip adding the label (overrides include)
+      author: 'dependabot[bot]'
+```
+
+### `include` / `exclude` matching
+
+Both `include` and `exclude` accept the same set of matcher fields. `exclude` takes precedence — if any exclude field matches, the label is not added regardless of `include`.
+
+`include.mode` controls how multiple `include` fields are combined:
+- `ALL` (default) — every defined field must match
+- `ANY` — at least one defined field must match
+
+### `removeOnMismatch`
+
+When `removeOnMismatch: true`, the label is removed from the PR/issue when the `include` condition no longer matches. Only active on `pull_request`, `pull_request_target`, and `issue` events (not `issue_comment` or `push`).
+
 ## Matchers
 
-> RegEx matcher requires backslash '\' to be double slashed '\\'. Hence, to match brackets '()' you need a regex of '\\(\\)'.
+> RegEx values can be written as `/pattern/` (with slashes) or as a plain string. Backslashes must be double-escaped: `\\` instead of `\`. To match `()` use `\\(\\)`.
 
 ### PR/Issue Title: RegEx
 
 ```yml
-version: v1
-
 labels:
   - label: 'feat'
-    matcher:
+    include:
       title: '^feat:.*'
 ```
 
 ### PR/Issue Body: RegEx
 
 ```yml
-version: v1
-
 labels:
   - label: 'bug'
-    matcher:
+    include:
       # e.g. '- [x] bug'
       body: "(\\n|.)*- \\[x\\] bug(\\n|.)*"
 ```
@@ -331,33 +369,27 @@ labels:
 ### PR/Issue Comment: RegEx
 
 ```yml
-version: v1
-
 labels:
   - label: 'stale'
-    matcher:
+    include:
       comment: '/stale'
 ```
 
 ### PR Branch: RegEx
 
 ```yml
-version: v1
-
 labels:
   - label: 'feat'
-    matcher:
+    include:
       branch: '^feat/.*'
 ```
 
 ### PR Base Branch: RegEx
 
 ```yml
-version: v1
-
 labels:
   - label: 'release'
-    matcher:
+    include:
       baseBranch: '^release/.*'
 ```
 
@@ -366,27 +398,21 @@ labels:
 Check all commits and find any match, max of 250 commits only.
 
 ```yml
-version: v1
-
 labels:
   - label: 'feat'
-    matcher:
+    include:
       commits: '^feat: .*'
 ```
 
 ### PR/Issue Author
 
-Check for pr or issue author match.
-
 ```yml
-version: v1
-
 labels:
   - label: 'single'
-    matcher:
+    include:
       author: 'some-user'
   - label: 'any'
-    matcher:
+    include:
       author:
         - adam
         - claire
@@ -396,52 +422,47 @@ labels:
 
 Maximum of 3000 files only.
 If you use this to audit changes, take note of the 3000 files limitation.
-Matchers within files are 'and condition'; all must match.
 
 #### PR Files Basic
 
 ```yml
-version: v1
-
 labels:
   - label: 'github'
-    sync: true
-    matcher:
-      # This is shorthand for any: [".github/**"]
+    removeOnMismatch: true
+    include:
+      # shorthand for any: [".github/**"]
       files: '.github/**'
 
   - label: 'security'
-    sync: true
-    matcher:
-      # This is shorthand for any: ["web/security/**", "security/**"]
+    removeOnMismatch: true
+    include:
+      # shorthand for any: ["web/security/**", "security/**"]
       files: ['web/security/**', 'security/**']
 ```
 
 #### PR Files Count
 
 ```yml
-version: v1
-
 labels:
   - label: 'size: s'
-    sync: true
-    matcher:
+    removeOnMismatch: true
+    include:
       files:
         count:
           gte: 1
           lte: 4
 
   - label: 'size: m'
-    sync: true
-    matcher:
+    removeOnMismatch: true
+    include:
       files:
         count:
           gte: 5
           lte: 10
 
   - label: 'size: l'
-    sync: true
-    matcher:
+    removeOnMismatch: true
+    include:
       files:
         count:
           gte: 11
@@ -450,32 +471,28 @@ labels:
 #### PR Files Any & All
 
 ```yml
-version: v1
-
 labels:
   - label: 'ci'
-    sync: true
-    matcher:
+    removeOnMismatch: true
+    include:
       files:
         any: ['.github/workflow/**', '.circleci/**']
         all: ['!app/**']
 
   - label: 'attention'
-    sync: true
-    matcher:
+    removeOnMismatch: true
+    include:
       files:
         any: ['app/**']
         count:
           neq: 1
 ```
 
-### PR Status Checks
+## PR Status Checks
 
-#### PR Check any
+### Check any
 
 ```yml
-version: v1
-
 checks:
   - context: 'Release Drafter'
     url: 'https://go.to/detail'
@@ -490,11 +507,9 @@ checks:
         - docs
 ```
 
-#### PR Check any + all
+### Check any + all
 
 ```yml
-version: v1
-
 checks:
   - context: 'Merge check'
     description: 'Labels for merge.'
@@ -503,16 +518,28 @@ checks:
       all: ['app']
 ```
 
-#### PR Check none
+### Check none
 
 ```yml
-version: v1
-
 checks:
   - context: 'Merge check'
     description: "Disable merging when 'DO NOT MERGE' label is set"
     labels:
       none: ['DO NOT MERGE']
+```
+
+## Comments
+
+Post an automatic comment when a PR or issue is labeled. Supports multiline strings.
+
+```yml
+comments:
+  issues: |
+    Thanks for opening this issue!
+    I have applied any labels matching special text in your title and description.
+  prs: |
+    Thanks for the contribution!
+    I have applied any labels matching your title and description.
 ```
 
 ## Attribution
