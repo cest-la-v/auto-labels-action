@@ -31,8 +31,6 @@ Optionally, generate a status check based on the labels.
   - Any label match
   - All label match
   - None label match
-- Post comments on issues or pull requests
-
 ## Usage
 
 #### `.github/workflows/labels.yml`
@@ -526,20 +524,6 @@ checks:
     description: "Disable merging when 'DO NOT MERGE' label is set"
     labels:
       none: ['DO NOT MERGE']
-```
-
-## Comments
-
-Post an automatic comment when a PR or issue is labeled. Supports multiline strings.
-
-```yml
-comments:
-  issues: |
-    Thanks for opening this issue!
-    I have applied any labels matching special text in your title and description.
-  prs: |
-    Thanks for the contribution!
-    I have applied any labels matching your title and description.
 ```
 
 ## Attribution

@@ -31,9 +31,6 @@ describe('valid config', () => {
     expect(() => parseConfig('semantic-release.yml')).not.toThrowError();
   });
 
-  it('comments.yml', function () {
-    expect(() => parseConfig('comments.yml')).not.toThrowError();
-  });
 });
 
 describe('invalid checks', () => {
@@ -116,8 +113,4 @@ describe('invalid labels matcher', () => {
   });
 });
 
-describe('invalid comments', () => {
-  it('comments-issues-invalid.yml', function () {
-    expect(() => parseConfig('invalid/comments-issues-invalid.yml')).toThrow(/labels\.yml parse error:/);
-  });
-});
+

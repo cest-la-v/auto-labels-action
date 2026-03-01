@@ -21,9 +21,6 @@
       "type": "array",
       "description": "List of commit-status check rules derived from matched labels.",
       "items": { "$ref": "#/definitions/Check" }
-    },
-    "comments": {
-      "$ref": "#/definitions/Comments"
     }
   },
   "definitions": {
@@ -202,20 +199,5 @@
         }
       }
     },
-    "Comments": {
-      "type": "object",
-      "additionalProperties": false,
-      "description": "Optional comment templates posted on matching events.",
-      "properties": {
-        "issues": {
-          "type": "string",
-          "description": "Comment body posted on issue events."
-        },
-        "prs": {
-          "type": "string",
-          "description": "Comment body posted on pull_request events."
-        }
-      }
-    }
   }
 }

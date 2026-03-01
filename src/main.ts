@@ -3,7 +3,6 @@ import * as github from '@actions/github';
 import { labels, mergeLabels } from './labels';
 import { Config, getConfig } from './config';
 import { checks, StatusCheck } from './checks';
-import { postComment } from './comments';
 
 const githubToken = core.getInput('github-token');
 const configPath = core.getInput('config-path', { required: true });
@@ -92,7 +91,6 @@ getConfig(client, configPath, configRepo)
       addLabels(finalLabels),
       removeLabels(finalLabels, config),
       checks(client, config, finalLabels).then((checks) => addChecks(checks)),
-      postComment(client, config, payload!.number),
     ]);
   })
   .catch((error) => {

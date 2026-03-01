@@ -68,11 +68,6 @@ const Check = t.intersection([
   }),
 ]);
 
-const Comments = t.partial({
-  issues: t.string,
-  prs: t.string,
-});
-
 const Config = t.intersection([
   t.type({
     version: t.literal('v1'),
@@ -80,7 +75,6 @@ const Config = t.intersection([
   t.partial({
     labels: t.array(Label),
     checks: t.array(Check),
-    comments: Comments,
   }),
 ]);
 
@@ -88,7 +82,6 @@ export type MatcherFields = t.TypeOf<typeof MatcherFields>;
 export type Include = t.TypeOf<typeof Include>;
 export type Label = t.TypeOf<typeof Label>;
 export type Check = t.TypeOf<typeof Check>;
-export type Comments = t.TypeOf<typeof Comments>;
 export type Config = t.TypeOf<typeof Config>;
 
 export function parse(content: string): Config {
