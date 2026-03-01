@@ -1,5 +1,5 @@
 name: 'Auto Labels'
-description: 'Auto Labels for title, body, comments, commit messages, branch, author or files with automated status checks.'
+description: 'Automatically manage labels on pull requests and issues based on configurable matchers (title, body, comments, commits, branch, files, author), with optional status checks.'
 author: 'cest-la-v'
 branding:
   icon: tag
