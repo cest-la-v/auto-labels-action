@@ -9,24 +9,48 @@
 ```
 src/main.ts         — Entry point: reads inputs, orchestrates labeling + check creation
 src/config.ts       — Parses and validates .github/labeler.yml using io-ts (runtime type-checking)
-src/labeler.ts      — Runs all 8 matchers in parallel, merges results with current PR/issue labels
+src/labeler.ts      — Evaluates labels per-label (include/exclude/mode), merges with current PR/issue labels
 src/checks.ts       — Evaluates check conditions against matched labels, produces StatusCheck objects
 src/matcher/        — One file per matcher type (title, body, comment, branch, base-branch, commits, files, author)
 ```
 
-**Data flow:** `main.ts` → `getConfig()` → `labels()` (runs all matchers in parallel) → `mergeLabels()` → add/remove via GitHub API → `checks()` → `createCommitStatus` per check.
+**Data flow:** `main.ts` → `getConfig()` → `labels()` → `buildContext()` (gathers PR data once) → per-label `evaluateLabel()` → `mergeLabels()` → add/remove via GitHub API → `checks()` → `createCommitStatus` per check.
+
+## Config Schema
+
+Labels use `include`/`exclude` (not `matcher`). Example:
+```yaml
+labels:
+  - label: breaking
+    include:
+      mode: ANY       # optional; ALL (default) = all defined fields must match
+      title: "/^feat!.*/"
+      author:
+        - renovate[bot]
+    exclude:
+      author:
+        - app-manifest[bot]
+checks:
+  - context: 'Semantic PR'
+    labels:
+      any: [feat, fix]
+```
+
+- A label with no `include` is **never** auto-added.
+- `exclude` with no fields never excludes.
+- `sync: true` on a label causes removal when the label no longer matches.
 
 ## Key Patterns
 
 ### Adding a new matcher
-Each matcher in `src/matcher/` exports a default function with the signature:
+Each matcher in `src/matcher/` exports a `test()` function with the signature:
 ```ts
-export default function match(client: InstanceType<typeof GitHub>, config: Config): string[] | Promise<string[]>
+export function test(fields: MatcherFields, value: <type>): boolean
 ```
-It filters `config.labels` for entries where its matcher field is defined, tests the condition, and returns matching label names. After creating the matcher file, import and call it inside `labeler.ts`'s `labels()` function alongside the other eight.
+It reads its field from `fields` (e.g. `fields.title`), returns `false` if undefined, and returns the match result. After creating the matcher file, call it inside `labeler.ts`'s `collectResults()` function.
 
 ### Config validation (io-ts)
-`src/config.ts` defines the schema with `io-ts` codecs. Extend `Matcher` (a `t.partial`) to add new matcher fields — the type is both the runtime validator and the TypeScript type via `t.TypeOf<typeof Matcher>`. Validation errors are surfaced via `io-ts-reporters` with a descriptive message.
+`src/config.ts` defines the schema with `io-ts` codecs. Extend `MatcherFields` (a `t.partial`) to add new matcher fields — the type is both the runtime validator and the TypeScript type via `t.TypeOf<typeof MatcherFields>`. `Include` extends `MatcherFields` with an optional `mode` field. Validation errors are surfaced via `io-ts-reporters` with a descriptive message.
 
 ### `sync: true` labels
 Labels with `sync: true` are removed from the PR/issue when their matcher no longer matches. Removal is skipped for `issue_comment` and `push` events — only `pull_request`, `pull_request_target`, and `issue` events trigger removal.
@@ -48,7 +72,7 @@ npm run format        # prettier --write
 
 ## Testing Conventions
 
-- Matcher unit tests (`__tests__/matcher/*.test.ts`) set `github.context.payload` directly and call the matcher with `null` as the client (synchronous matchers ignore it).
+- Matcher unit tests (`__tests__/matcher/*.test.ts`) call `test(fields, value)` directly with plain objects — no `github.context.payload` mocking needed.
 - Integration tests (`__tests__/labeler.test.ts`, `__tests__/config.test.ts`) use a mock GitHub client that reads fixture files from `__tests__/fixtures/` as if they were fetched from the API.
 - Invalid config scenarios live in `__tests__/fixtures/invalid/` and are tested to throw.
 - `@ts-ignore` is expected in test mock clients — do not remove them.
