@@ -1,19 +1,17 @@
-# Multi Labeler
+# Auto Labels
 
-[![codecov](https://codecov.io/gh/fuxingloh/multi-labeler/branch/main/graph/badge.svg?token=SOWIV1VVM1)](https://codecov.io/gh/fuxingloh/multi-labeler)
-[![CodeFactor](https://www.codefactor.io/repository/github/fuxingloh/multi-labeler/badge)](https://www.codefactor.io/repository/github/fuxingloh/multi-labeler)
-[![Release](https://img.shields.io/github/v/release/fuxingloh/multi-labeler)](https://github.com/fuxingloh/multi-labeler/releases)
-[![License MIT](https://img.shields.io/github/license/fuxingloh/multi-labeler)](https://github.com/fuxingloh/multi-labeler/blob/main/LICENSE)
+[![Release](https://img.shields.io/github/v/release/cest-la-v/auto-labels-action)](https://github.com/cest-la-v/auto-labels-action/releases)
+[![License MIT](https://img.shields.io/github/license/cest-la-v/auto-labels-action)](https://github.com/cest-la-v/auto-labels-action/blob/main/LICENSE)
 
-Multi labeler for title, body, comments, commit messages, branch, base branch, author or files.
+Auto Labels for title, body, comments, commit messages, branch, base branch, author or files.
 Optionally, generate a status check based on the labels.
 
-[Who is using `fuxingloh/multi-labeler`?](https://github.com/search?o=desc&q=fuxingloh+%2F+multi-labeler&s=indexed&type=Code)
+> **Based on [fuxingloh/multi-labeler](https://github.com/fuxingloh/multi-labeler)** — forked and refactored with additional changes.
 
 ## Features
 
 - Single compiled javascript file, extremely fast. Use fewer credits!
-- Append based multi-labeler, using `.github/labeler.yml` as config.
+- Append based labeler, using `.github/labeler.yml` as config.
 - Automatically fail if `labeler.yml` is malformed, type-checked.
 - Set label to sync for conditional labeling, removed if condition failed.
 - Regex Matcher:
@@ -69,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # follows semantic versioning. Lock to different version: v1, v1.5, v1.5.0 or use a commit hash.
-      - uses: fuxingloh/multi-labeler@v4 # v4
+      - uses: cest-la-v/auto-labels-action@v1 # v1
         with:
           github-token: ${{secrets.GITHUB_TOKEN}} # optional, default to '${{ github.token }}'
           config-path: .github/labeler.yml # optional, default to '.github/labeler.yml'
@@ -96,7 +94,7 @@ labels:
       commits: '^feat:.*'
       author:
         - github-actions
-        - fuxingloh
+        - my-bot
       files:
         any: ['app/*']
         all: ['!app/config/**']
@@ -139,7 +137,7 @@ jobs:
     name: Labeler
     runs-on: ubuntu-latest
     steps:
-      - uses: fuxingloh/multi-labeler@v4
+      - uses: cest-la-v/auto-labels-action@v1
 ```
 
 #### `.github/labeler.yml`
@@ -170,7 +168,7 @@ labels:
 
 checks:
   - context: 'Semantic Pull Request'
-    url: 'https://github.com/fuxingloh/multi-labeler/blob/main/.github/labeler.yml'
+    url: 'https://github.com/cest-la-v/auto-labels-action/blob/main/.github/labeler.yml'
     description:
       success: Ready for review & merge.
       failure: Missing semantic label for merge.
@@ -200,7 +198,7 @@ jobs:
     name: Labeler
     runs-on: ubuntu-latest
     steps:
-      - uses: fuxingloh/multi-labeler@v4
+      - uses: cest-la-v/auto-labels-action@v1
 ```
 
 #### `.github/labeler.yml`
@@ -243,7 +241,7 @@ jobs:
     name: Labeler
     runs-on: ubuntu-latest
     steps:
-      - uses: fuxingloh/multi-labeler@v4
+      - uses: cest-la-v/auto-labels-action@v1
 ```
 
 #### `.github/labeler.yml`
@@ -274,7 +272,7 @@ jobs:
     name: Labeler
     runs-on: ubuntu-latest
     steps:
-      - uses: fuxingloh/multi-labeler@v4
+      - uses: cest-la-v/auto-labels-action@v1
 ```
 
 #### `.github/labeler.yml`
@@ -296,7 +294,7 @@ labels:
 
 ## Configuration
 
-Once you’ve added fuxingloh/multi-labeler to your repository,
+Once you've added cest-la-v/auto-labels-action to your repository,
 it must be enabled by adding a `.github/labeler.yml` configuration file to the repository.
 If you want to use a configuration file shared across multiple repositories,
 you can set the`config-repo` input to point to a different repository.
@@ -305,7 +303,7 @@ as the default `GITHUB_TOKEN` only has access to the repository the action is ru
 
 ## Matchers
 
-> RegEx matcher requires backslash '\' to be double slashed '\\'. Hence, to match brackets '()' you need a regex of '\\(\\)'. See https://github.com/fuxingloh/multi-labeler/issues/103
+> RegEx matcher requires backslash '\' to be double slashed '\\'. Hence, to match brackets '()' you need a regex of '\\(\\)'.
 
 ### PR/Issue Title: RegEx
 
@@ -386,7 +384,7 @@ version: v1
 labels:
   - label: 'single'
     matcher:
-      author: 'fuxingloh'
+      author: 'some-user'
   - label: 'any'
     matcher:
       author:
@@ -517,14 +515,7 @@ checks:
       none: ['DO NOT MERGE']
 ```
 
-## Why?
+## Attribution
 
-> There are so many labelers why create another? 😧
-
-1. I want a lightweight labeler written in TypeScript so that it doesn't have to build a docker image every time it runs.
-2. I want a simple match first append based multi-labeler without it being a turing complete solution.
-3. I want to write my rules with `.github/labeler.yml` for a single source of label truth.
-4. I don't want it to do anything else, labels only.
-   1. Assume you are using GitHub branch protection (labels only).
-   2. I want to run this in PR triage before everything else (labels only).
-   3. Chain this action with another action; this should just be for (labels only).
+This project is a fork of [fuxingloh/multi-labeler](https://github.com/fuxingloh/multi-labeler), refactored and extended with additional changes.
+Thanks to the original author for the solid foundation.

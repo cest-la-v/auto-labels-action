@@ -1,6 +1,6 @@
-name: 'Multi Labeler'
-description: 'Multi labeler for title, body, comments, commit messages, branch, author or files with automated status checks.'
-author: 'Fuxing Loh'
+name: 'Auto Labels'
+description: 'Auto Labels for title, body, comments, commit messages, branch, author or files with automated status checks.'
+author: 'cest-la-v'
 branding:
   icon: tag
   color: yellow

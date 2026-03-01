@@ -1,14 +1,14 @@
 {
-  "name": "multi-labeler",
+  "name": "auto-labels-action",
   "version": "0.0.0",
   "private": true,
-  "description": "Multi labeler for title, body, comments, commit messages, branch or files with automated status checks.",
+  "description": "Automatically manage labels on pull requests and issues based on configurable matchers (title, body, comments, commits, branch, files, author), with optional status checks.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fuxingloh/multi-labeler.git"
+    "url": "git+https://github.com/cest-la-v/auto-labels-action.git"
   },
   "license": "MIT",
-  "author": "Fuxing Loh",
+  "author": "cest-la-v",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",

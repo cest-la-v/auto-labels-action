@@ -88,11 +88,11 @@ labels:
   - label: 'Maintainer'
     include:
       author:
-        - fuxingloh
+        - cest-la-v
 
   - label: 'Owner'
     include:
-      author: fuxingloh
+      author: cest-la-v
 
   - label: 'branch: main'
     include:
@@ -104,7 +104,7 @@ labels:
 
 checks:
   - context: 'Semantic Pull Request'
-    url: 'https://github.com/fuxingloh/multi-labeler/blob/main/.github/labels.yml'
+    url: 'https://github.com/cest-la-v/auto-labels-action/blob/main/.github/labels.yml'
     description:
       success: Ready for review & merge.
       failure: Missing semantic label for merge.
@@ -116,7 +116,7 @@ checks:
         - docs
 
   - context: 'Do Not Merge'
-    url: 'https://github.com/fuxingloh/multi-labeler/blob/main/.github/labels.yml'
+    url: 'https://github.com/cest-la-v/auto-labels-action/blob/main/.github/labels.yml'
     description: "Disable merging when 'DO NOT MERGE' label is set"
     labels:
       none:

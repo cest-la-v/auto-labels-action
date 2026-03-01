@@ -19,7 +19,7 @@ labels:
 
 checks:
   - context: 'Semantic Pull Request'
-    url: 'https://github.com/fuxingloh/multi-labeler/blob/main/.github/labels.yml'
+    url: 'https://github.com/cest-la-v/auto-labels-action/blob/main/.github/labels.yml'
     description:
       success: Ready for review & merge.
       failure: Missing semantic label for merge.

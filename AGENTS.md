@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-`multi-labeler` is a GitHub Action (Node 20) that automatically labels pull requests and issues based on configurable matchers, and optionally generates commit status checks. It is distributed as a single bundled file (`dist/index.js`) built with `@vercel/ncc`.
+`auto-labels-action` (Auto Labels) is a GitHub Action (Node 20) that automatically labels pull requests and issues based on configurable matchers, and optionally generates commit status checks. It is distributed as a single bundled file (`dist/index.js`) built with `@vercel/ncc`.
 
 ## Architecture
 
