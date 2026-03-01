@@ -8,7 +8,7 @@ branding:
 inputs:
   config-path:
     description: 'The path for the label configurations'
-    default: '.github/labeler.yml'
+    default: '.github/labels.yml'
     required: false
   config-repo:
     description: 'The repository for the label configurations'

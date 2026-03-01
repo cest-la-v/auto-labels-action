@@ -34,33 +34,33 @@ describe('valid config', () => {
 
 describe('invalid checks', () => {
   it('checks-all-invalid.yml', function () {
-    expect(() => parseConfig('invalid/checks-all-invalid.yml')).toThrow(/labeler\.yml parse error:/);
+    expect(() => parseConfig('invalid/checks-all-invalid.yml')).toThrow(/labels\.yml parse error:/);
   });
 
   it('checks-any-invalid.yml', function () {
-    expect(() => parseConfig('invalid/checks-any-invalid.yml')).toThrow(/labeler\.yml parse error:/);
+    expect(() => parseConfig('invalid/checks-any-invalid.yml')).toThrow(/labels\.yml parse error:/);
   });
 
   it('checks-context-invalid.yml', function () {
-    expect(() => parseConfig('invalid/checks-context-invalid.yml')).toThrow(/labeler\.yml parse error:/);
+    expect(() => parseConfig('invalid/checks-context-invalid.yml')).toThrow(/labels\.yml parse error:/);
   });
 
   it('checks-context-missing.yml', function () {
-    expect(() => parseConfig('invalid/checks-context-missing.yml')).toThrow(/labeler\.yml parse error:/);
+    expect(() => parseConfig('invalid/checks-context-missing.yml')).toThrow(/labels\.yml parse error:/);
   });
 
   it('checks-empty.yml', function () {
-    expect(() => parseConfig('invalid/checks-empty.yml')).toThrow(/labeler\.yml parse error:/);
+    expect(() => parseConfig('invalid/checks-empty.yml')).toThrow(/labels\.yml parse error:/);
   });
 
   it('checks-url-invalid.yml', function () {
-    expect(() => parseConfig('invalid/checks-url-invalid.yml')).toThrow(/labeler\.yml parse error:/);
+    expect(() => parseConfig('invalid/checks-url-invalid.yml')).toThrow(/labels\.yml parse error:/);
   });
 });
 
 describe('invalid labels', () => {
   it('labels-empty.yml', function () {
-    expect(() => parseConfig('invalid/labels-empty.yml')).toThrow(/labeler\.yml parse error:/);
+    expect(() => parseConfig('invalid/labels-empty.yml')).toThrow(/labels\.yml parse error:/);
   });
 
   it('malformed-escaping.yml', function () {
@@ -73,41 +73,41 @@ describe('invalid labels', () => {
 
   it('version-invalid.yml', function () {
     expect(() => parseConfig('invalid/version-invalid.yml')).toThrow(
-      'labeler.yml parse error:\\nExpecting "v1" at 0.version but instead got: "v100"',
+      'labels.yml parse error:\nExpecting "v1" at 0.version but instead got: "v100"',
     );
   });
 });
 
 describe('invalid labels matcher', () => {
   it('matcher-author-invalid.yml', function () {
-    expect(() => parseConfig('invalid/matcher-author-invalid.yml')).toThrow(/labeler\.yml parse error:/);
+    expect(() => parseConfig('invalid/matcher-author-invalid.yml')).toThrow(/labels\.yml parse error:/);
   });
 
   it('matcher-body-invalid.yml', function () {
-    expect(() => parseConfig('invalid/matcher-body-invalid.yml')).toThrow(/labeler\.yml parse error:/);
+    expect(() => parseConfig('invalid/matcher-body-invalid.yml')).toThrow(/labels\.yml parse error:/);
   });
 
   it('matcher-branch-invalid.yml', function () {
-    expect(() => parseConfig('invalid/matcher-branch-invalid.yml')).toThrow(/labeler\.yml parse error:/);
+    expect(() => parseConfig('invalid/matcher-branch-invalid.yml')).toThrow(/labels\.yml parse error:/);
   });
 
   it('matcher-baseBranch-invalid.yml', function () {
-    expect(() => parseConfig('invalid/matcher-basebranch-invalid.yml')).toThrow(/labeler\.yml parse error:/);
+    expect(() => parseConfig('invalid/matcher-basebranch-invalid.yml')).toThrow(/labels\.yml parse error:/);
   });
 
   it('matcher-comment-invalid.yml', function () {
-    expect(() => parseConfig('invalid/matcher-comment-invalid.yml')).toThrow(/labeler\.yml parse error:/);
+    expect(() => parseConfig('invalid/matcher-comment-invalid.yml')).toThrow(/labels\.yml parse error:/);
   });
 
   it('matcher-commits-invalid.yml', function () {
-    expect(() => parseConfig('invalid/matcher-commits-invalid.yml')).toThrow(/labeler\.yml parse error:/);
+    expect(() => parseConfig('invalid/matcher-commits-invalid.yml')).toThrow(/labels\.yml parse error:/);
   });
 
   it('matcher-files-invalid.yml', function () {
-    expect(() => parseConfig('invalid/matcher-files-invalid.yml')).toThrow(/labeler\.yml parse error:/);
+    expect(() => parseConfig('invalid/matcher-files-invalid.yml')).toThrow(/labels\.yml parse error:/);
   });
 
   it('matcher-title-invalid.yml', function () {
-    expect(() => parseConfig('invalid/matcher-title-invalid.yml')).toThrow(/labeler\.yml parse error:/);
+    expect(() => parseConfig('invalid/matcher-title-invalid.yml')).toThrow(/labels\.yml parse error:/);
   });
 });

@@ -91,7 +91,7 @@ export function parse(content: string): Config {
   if (isRight(decoded)) {
     return decoded.right;
   } else {
-    throw new Error(`labeler.yml parse error:\\n${reporter.report(decoded).join('\\n')}`);
+    throw new Error(`labels.yml parse error:\n${reporter.report(decoded).join('\n')}`);
   }
 }
 

@@ -1,0 +1,7 @@
+{
+  // Treat intentionally malformed YAML test fixtures as plain text
+  // so the YAML extension does not report expected parse errors as problems.
+  "files.associations": {
+    "**/__tests__/**/malformed-*.{yaml,yml}": "plaintext"
+  }
+}

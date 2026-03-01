@@ -78,7 +78,7 @@ describe('labeler', () => {
   });
 
   it('should be able to load default config', async function () {
-    await runLabels('.github/labeler.yml');
+    await runLabels('.github/labels.yml');
   });
 
   it('empty should not fail', async function () {
