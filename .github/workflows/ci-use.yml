@@ -4,6 +4,7 @@ on:
   pull_request:
     types: [opened, reopened, edited, synchronize, ready_for_review, labeled, unlabeled]
   issues:
+    types: [opened, reopened]
   issue_comment:
 
 permissions:
