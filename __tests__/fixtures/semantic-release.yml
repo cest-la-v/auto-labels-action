@@ -2,19 +2,19 @@ version: v1
 
 labels:
   - label: 'feat'
-    matcher:
+    include:
       title: '^feat:.*'
 
   - label: 'fix'
-    matcher:
+    include:
       title: '^fix:.*'
 
   - label: 'chore'
-    matcher:
+    include:
       title: '^chore:.*'
 
   - label: 'docs'
-    matcher:
+    include:
       title: '^docs:.*'
 
 checks:

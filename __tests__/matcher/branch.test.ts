@@ -1,58 +1,20 @@
-import match from '../../src/matcher/branch';
-import * as github from '@actions/github';
-import { Config } from '../../src/config';
+import { test } from '../../src/matcher/branch';
 
-function getMatchedLabels(config: Config): string[] {
-  // @ts-ignore
-  return match(null, config);
-}
-
-const config: Config = {
-  version: 'v1',
-  labels: [
-    {
-      label: 'feat',
-      matcher: {
-        branch: '^feat/.*',
-      },
-    },
-  ],
-};
-
-describe('empty', function () {
-  it('no payload should be undefined', async function () {
-    github.context.payload = {};
-    expect(getMatchedLabels(config)).toEqual([]);
+describe('branch', () => {
+  it('should return false when branch field is undefined', () => {
+    expect(test({}, 'feat/spaceship')).toBe(false);
   });
 
-  it('pull_request should be empty', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 1,
-        title: 'nothing interesting',
-        head: {
-          ref: 'spaceship',
-        },
-      },
-    };
+  it('should return false when ref is undefined', () => {
+    expect(test({ branch: '^feat/.*' }, undefined)).toBe(false);
+  });
 
-    expect(getMatchedLabels(config)).toEqual([]);
+  it('should not match', () => {
+    expect(test({ branch: '^feat/.*' }, 'spaceship')).toBe(false);
+  });
+
+  it('should match feat branch', () => {
+    expect(test({ branch: '^feat/.*' }, 'feat/spaceship')).toBe(true);
   });
 });
 
-describe('pull_request', () => {
-  it('should have feat', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 1,
-        title: 'spaceship',
-        head: {
-          ref: 'feat/spaceship',
-        },
-      },
-    };
-
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['feat']);
-  });
-});

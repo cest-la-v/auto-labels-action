@@ -2,5 +2,5 @@ version: v1
 
 labels:
   - label: 'body'
-    matcher:
+    include:
       body: ['abc']

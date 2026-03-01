@@ -2,6 +2,6 @@ version: v1
 
 labels:
   - label: "invalid-indent"
-      matcher:
+      include:
         title: "1"
 

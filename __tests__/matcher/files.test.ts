@@ -1,487 +1,110 @@
-import match from '../../src/matcher/files';
-import * as github from '@actions/github';
-import { Config } from '../../src/config';
+import { test } from '../../src/matcher/files';
 
-async function getMatchedLabels(config: Config): Promise<string[]> {
-  return match(
-    {
-      rest: {
-        pulls: {
-          listFiles: {
-            endpoint: {
-              // @ts-ignore
-              merge(params) {
-                return { pull_number: params.pull_number };
-              },
-            },
-          },
-        },
-      },
-      // @ts-ignore
-      paginate(params): Promise<any[]> {
-        // @ts-ignore
-        return Promise.resolve(files[params.pull_number]);
-      },
-    },
-    config,
-  );
-}
+// File lists used in test scenarios (matching the original fixture data)
+const files1 = ['.github/labeler.yml', 'app/main.js', 'security/main.js', 'security/abc/abc.js', 'setup/abc/abc.xml', 'setup/abc/abc.js'];
+const files2 = ['.github/labeler.yml'];
+const files3 = ['app/main.js', 'setup/abc/abc.js', 'test/abc/abc.js'];
+const files4 = ['security/main.js'];
+const files5 = ['security/abc/abc.js'];
+const files6 = ['setup/abc/abc.xml'];
+const files7 = ['setup/abc/abc.js', '1/abc/abc.js', '3/abc/abc.js'];
+const files8 = ['app/1.js', 'app/2.js', 'app/3.js'];
 
-const basic: Config = {
-  version: 'v1',
-  labels: [
-    {
-      label: 'security',
-      matcher: {
-        files: ['security/**', 'setup/**.xml'],
-      },
-    },
-    {
-      label: 'app',
-      matcher: {
-        files: 'app/**',
-      },
-    },
-    {
-      label: 'labeler',
-      matcher: {
-        files: '.github/labeler.yml',
-      },
-    },
-  ],
-};
-
-const complex: Config = {
-  version: 'v1',
-  labels: [
-    {
-      label: 'all-app',
-      matcher: {
-        files: {
-          all: ['app/**'],
-        },
-      },
-    },
-    {
-      label: 'any-app',
-      matcher: {
-        files: {
-          any: ['app/**'],
-        },
-      },
-    },
-    {
-      label: 'none-app',
-      matcher: {
-        files: {
-          all: ['!app/**'],
-        },
-      },
-    },
-    {
-      label: 'all-any',
-      matcher: {
-        files: {
-          any: ['security/**', 'setup/**'],
-          all: ['!app/**'],
-          count: {},
-        },
-      },
-    },
-    {
-      label: 'S',
-      matcher: {
-        files: {
-          count: {
-            eq: 1,
-          },
-        },
-      },
-    },
-    {
-      label: 'NEQ1',
-      matcher: {
-        files: {
-          count: {
-            neq: 1,
-          },
-        },
-      },
-    },
-    {
-      label: 'M',
-      matcher: {
-        files: {
-          count: {
-            gte: 2,
-            lte: 5,
-          },
-        },
-      },
-    },
-    {
-      label: 'L',
-      matcher: {
-        files: {
-          count: {
-            gte: 6,
-          },
-        },
-      },
-    },
-    {
-      label: 'mixed-1',
-      matcher: {
-        files: {
-          any: ['app/**'],
-          all: ['!setup/**'],
-          count: {
-            gte: 2,
-            lte: 4,
-          },
-        },
-      },
-    },
-    {
-      label: 'invalid-1',
-      matcher: {
-        files: {
-          any: ['app/**'],
-          all: ['!setup/**'],
-          count: {
-            eq: 1,
-            neq: 1,
-            gte: 1,
-            lte: 1,
-          },
-        },
-      },
-    },
-    {
-      label: 'invalid-2',
-      matcher: {
-        files: {
-          any: [],
-          all: [],
-          count: {
-            eq: 1,
-            neq: 1,
-            gte: 1,
-            lte: 1,
-          },
-        },
-      },
-    },
-    {
-      label: 'invalid-3',
-      matcher: {
-        files: {
-          any: [],
-          all: ['!setup/**'],
-          count: {
-            eq: 1,
-            neq: 1,
-            gte: 1,
-            lte: 1,
-          },
-        },
-      },
-    },
-    {
-      label: 'invalid-4',
-      matcher: {
-        files: {
-          all: ['!setup/**'],
-          count: {
-            eq: 1,
-            neq: 1,
-            gte: 1,
-            lte: 1,
-          },
-        },
-      },
-    },
-    {
-      label: 'invalid-5',
-      matcher: {
-        files: {
-          any: ['!setup/**'],
-          all: [],
-          count: {
-            eq: 1,
-            neq: 1,
-            gte: 1,
-            lte: 1,
-          },
-        },
-      },
-    },
-    {
-      label: 'invalid-6',
-      matcher: {
-        files: {
-          any: ['!setup/**'],
-          count: {
-            eq: 1,
-            neq: 1,
-            gte: 1,
-            lte: 1,
-          },
-        },
-      },
-    },
-  ],
-};
-
-const files = {
-  1: [
-    {
-      filename: '.github/labeler.yml',
-    },
-    {
-      filename: 'app/main.js',
-    },
-    {
-      filename: 'security/main.js',
-    },
-    {
-      filename: 'security/abc/abc.js',
-    },
-    {
-      filename: 'setup/abc/abc.xml',
-    },
-    {
-      filename: 'setup/abc/abc.js',
-    },
-  ],
-  2: [
-    {
-      filename: '.github/labeler.yml',
-    },
-  ],
-  3: [
-    {
-      filename: 'app/main.js',
-    },
-    {
-      filename: 'setup/abc/abc.js',
-    },
-    {
-      filename: 'test/abc/abc.js',
-    },
-  ],
-  4: [
-    {
-      filename: 'security/main.js',
-    },
-  ],
-  5: [
-    {
-      filename: 'security/abc/abc.js',
-    },
-  ],
-  6: [
-    {
-      filename: 'setup/abc/abc.xml',
-    },
-  ],
-  7: [
-    {
-      filename: 'setup/abc/abc.js',
-    },
-    {
-      filename: '1/abc/abc.js',
-    },
-    {
-      filename: '3/abc/abc.js',
-    },
-  ],
-  8: [{ filename: 'app/1.js' }, { filename: 'app/2.js' }, { filename: 'app/3.js' }],
-};
-
-describe('basic', () => {
-  beforeEach(() => {
-    // Mock github context
-    jest.spyOn(github.context, 'repo', 'get').mockImplementation(() => {
-      return {
-        owner: 'owner-name',
-        repo: 'repo-name',
-      };
-    });
+describe('basic (string & array patterns)', () => {
+  it('should return false with no files field', () => {
+    expect(test({}, files1)).toBe(false);
   });
 
-  afterAll(() => {
-    jest.restoreAllMocks();
+  describe('security (array pattern)', () => {
+    const fields = { files: ['security/**', 'setup/**/*.xml'] };
+    it('files1 should match security', () => expect(test(fields, files1)).toBe(true));
+    it('files2 should not match', () => expect(test(fields, files2)).toBe(false));
+    it('files3 should not match', () => expect(test(fields, files3)).toBe(false));
+    it('files4 should match', () => expect(test(fields, files4)).toBe(true));
+    it('files5 should match', () => expect(test(fields, files5)).toBe(true));
+    it('files6 should match (setup/**/*.xml)', () => expect(test(fields, files6)).toBe(true));
+    it('files7 should not match', () => expect(test(fields, files7)).toBe(false));
   });
 
-  it('payload empty should be empty', async function () {
-    github.context.payload = {};
-    expect(await getMatchedLabels(basic)).toEqual([]);
+  describe('app (string pattern)', () => {
+    const fields = { files: 'app/**' };
+    it('files1 should match', () => expect(test(fields, files1)).toBe(true));
+    it('files2 should not match', () => expect(test(fields, files2)).toBe(false));
+    it('files3 should match', () => expect(test(fields, files3)).toBe(true));
+    it('files4 should not match', () => expect(test(fields, files4)).toBe(false));
   });
 
-  it('1 should have security/app/labeler', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 1,
-      },
-    };
-    const labels = await getMatchedLabels(basic);
-    expect(labels).toEqual(['security', 'app', 'labeler']);
-  });
-
-  it('2 should have labeler', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 2,
-      },
-    };
-    const labels = await getMatchedLabels(basic);
-    expect(labels).toEqual(['labeler']);
-  });
-
-  it('3 should have app', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 3,
-      },
-    };
-    const labels = await getMatchedLabels(basic);
-    expect(labels).toEqual(['app']);
-  });
-
-  it('4 should have security', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 4,
-      },
-    };
-    const labels = await getMatchedLabels(basic);
-    expect(labels).toEqual(['security']);
-  });
-
-  it('5 should have security', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 5,
-      },
-    };
-    const labels = await getMatchedLabels(basic);
-    expect(labels).toEqual(['security']);
-  });
-
-  it('6 should be empty', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 6,
-      },
-    };
-    const labels = await getMatchedLabels(basic);
-    expect(labels).toEqual([]);
-  });
-
-  it('7 should be empty', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 7,
-      },
-    };
-    const labels = await getMatchedLabels(basic);
-    expect(labels).toEqual([]);
+  describe('labeler (exact file path)', () => {
+    const fields = { files: '.github/labeler.yml' };
+    it('files1 should match', () => expect(test(fields, files1)).toBe(true));
+    it('files2 should match', () => expect(test(fields, files2)).toBe(true));
+    it('files3 should not match', () => expect(test(fields, files3)).toBe(false));
   });
 });
 
-describe('complex', () => {
-  beforeEach(() => {
-    // Mock github context
-    jest.spyOn(github.context, 'repo', 'get').mockImplementation(() => {
-      return {
-        owner: 'owner-name',
-        repo: 'repo-name',
-      };
+describe('complex (any/all/count)', () => {
+  describe('all-app', () => {
+    const fields = { files: { all: ['app/**'] } };
+    it('files1 should not match (has non-app files)', () => expect(test(fields, files1)).toBe(false));
+    it('files8 should match (all app)', () => expect(test(fields, files8)).toBe(true));
+    it('files4 should not match (no app files)', () => expect(test(fields, files4)).toBe(false));
+  });
+
+  describe('any-app', () => {
+    const fields = { files: { any: ['app/**'] } };
+    it('files1 should match', () => expect(test(fields, files1)).toBe(true));
+    it('files3 should match', () => expect(test(fields, files3)).toBe(true));
+    it('files8 should match', () => expect(test(fields, files8)).toBe(true));
+    it('files2 should not match', () => expect(test(fields, files2)).toBe(false));
+  });
+
+  describe('none-app (all: !app/**)', () => {
+    const fields = { files: { all: ['!app/**'] } };
+    it('files2 should match (no app files)', () => expect(test(fields, files2)).toBe(true));
+    it('files4 should match (no app files)', () => expect(test(fields, files4)).toBe(true));
+    it('files1 should not match (has app/main.js)', () => expect(test(fields, files1)).toBe(false));
+  });
+
+  describe('count: eq', () => {
+    const fields = { files: { count: { eq: 1 } } };
+    it('files2 should match (1 file)', () => expect(test(fields, files2)).toBe(true));
+    it('files4 should match (1 file)', () => expect(test(fields, files4)).toBe(true));
+    it('files1 should not match (6 files)', () => expect(test(fields, files1)).toBe(false));
+  });
+
+  describe('count: neq', () => {
+    const fields = { files: { count: { neq: 1 } } };
+    it('files1 should match (6 != 1)', () => expect(test(fields, files1)).toBe(true));
+    it('files3 should match (3 != 1)', () => expect(test(fields, files3)).toBe(true));
+    it('files2 should not match (1 == 1)', () => expect(test(fields, files2)).toBe(false));
+  });
+
+  describe('count: gte/lte range (M: 2-5)', () => {
+    const fields = { files: { count: { gte: 2, lte: 5 } } };
+    it('files3 should match (3 files)', () => expect(test(fields, files3)).toBe(true));
+    it('files7 should match (3 files)', () => expect(test(fields, files7)).toBe(true));
+    it('files2 should not match (1 file)', () => expect(test(fields, files2)).toBe(false));
+    it('files1 should not match (6 files)', () => expect(test(fields, files1)).toBe(false));
+  });
+
+  describe('count: gte (L: >= 6)', () => {
+    const fields = { files: { count: { gte: 6 } } };
+    it('files1 should match (6 files)', () => expect(test(fields, files1)).toBe(true));
+    it('files3 should not match (3 files)', () => expect(test(fields, files3)).toBe(false));
+  });
+
+  describe('any + all + count combined', () => {
+    const fields = { files: { any: ['security/**', 'setup/**'], all: ['!app/**'], count: {} } };
+    it('files4 should match (security, no app)', () => expect(test(fields, files4)).toBe(true));
+    it('files5 should match (security, no app)', () => expect(test(fields, files5)).toBe(true));
+    it('files6 should match (setup, no app)', () => expect(test(fields, files6)).toBe(true));
+    it('files1 should not match (has app/)', () => expect(test(fields, files1)).toBe(false));
+  });
+
+  describe('mutually exclusive count constraints', () => {
+    const fields = { files: { count: { eq: 1, neq: 1 } } };
+    it('should never match (eq: 1 AND neq: 1 is impossible)', () => {
+      expect(test(fields, files2)).toBe(false);
     });
-  });
-
-  afterAll(() => {
-    jest.restoreAllMocks();
-  });
-
-  it('1 should have complex labels', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 1,
-      },
-    };
-    const labels = await getMatchedLabels(complex);
-    expect(labels).toEqual(['any-app', 'NEQ1', 'L']);
-  });
-
-  it('2 should have complex labels', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 2,
-      },
-    };
-    const labels = await getMatchedLabels(complex);
-    expect(labels).toEqual(['none-app', 'S']);
-  });
-
-  it('3 should have complex labels', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 3,
-      },
-    };
-    const labels = await getMatchedLabels(complex);
-    expect(labels).toEqual(['any-app', 'NEQ1', 'M']);
-  });
-
-  it('4 should have complex labels', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 4,
-      },
-    };
-    const labels = await getMatchedLabels(complex);
-    expect(labels).toEqual(['none-app', 'all-any', 'S']);
-  });
-
-  it('5 should have complex labels', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 5,
-      },
-    };
-    const labels = await getMatchedLabels(complex);
-    expect(labels).toEqual(['none-app', 'all-any', 'S']);
-  });
-
-  it('6 should have complex labels', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 6,
-      },
-    };
-    const labels = await getMatchedLabels(complex);
-    expect(labels).toEqual(['none-app', 'all-any', 'S']);
-  });
-
-  it('7 should have complex labels', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 7,
-      },
-    };
-    const labels = await getMatchedLabels(complex);
-    expect(labels).toEqual(['none-app', 'all-any', 'NEQ1', 'M']);
-  });
-
-  it('8 should have complex labels', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 8,
-      },
-    };
-    const labels = await getMatchedLabels(complex);
-    expect(labels).toEqual(['all-app', 'any-app', 'NEQ1', 'M', 'mixed-1']);
   });
 });

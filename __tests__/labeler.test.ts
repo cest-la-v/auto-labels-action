@@ -229,21 +229,17 @@ describe('mergeLabels, sync config', () => {
       {
         label: 'sync1',
         sync: true,
-        matcher: {},
       },
       {
         label: 'sync2',
         sync: true,
-        matcher: {},
       },
       {
         label: 'no-sync1',
         sync: false,
-        matcher: {},
       },
       {
         label: 'no-sync2',
-        matcher: {},
       },
     ],
   };

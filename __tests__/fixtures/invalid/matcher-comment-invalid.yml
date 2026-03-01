@@ -2,5 +2,5 @@ version: v1
 
 labels:
   - label: 'comment'
-    matcher:
+    include:
       comment: []

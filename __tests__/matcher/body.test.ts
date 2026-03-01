@@ -1,139 +1,35 @@
-import match from '../../src/matcher/body';
-import * as github from '@actions/github';
-import { Config } from '../../src/config';
+import { test } from '../../src/matcher/body';
 
-function getMatchedLabels(config: Config): string[] {
-  // @ts-ignore
-  return match(null, config);
-}
-
-const config: Config = {
-  version: 'v1',
-  labels: [
-    {
-      label: 'checkbox',
-      matcher: {
-        body: '(\\n|.)*- \\[x\\] checkbox(\\n|.)*',
-      },
-    },
-    {
-      label: 'something',
-      matcher: {
-        body: '.* something .*',
-      },
-    },
-  ],
-};
-
-describe('empty', function () {
-  it('should be undefined', async function () {
-    github.context.payload = {};
-    expect(getMatchedLabels(config)).toEqual([]);
+describe('body', () => {
+  it('should return false when body field is undefined', () => {
+    expect(test({}, 'some body text')).toBe(false);
   });
 
-  it('pull_request should be empty', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 1,
-        title: 'empty',
-        body: 'nothing',
-      },
-    };
-
-    expect(getMatchedLabels(config)).toEqual([]);
+  it('should return false when text is undefined', () => {
+    expect(test({ body: 'checkbox' }, undefined)).toBe(false);
   });
 
-  it('issue should be empty', async function () {
-    github.context.payload = {
-      issue: {
-        number: 1,
-        title: 'empty',
-        body: 'nothing',
-      },
-    };
+  it('should not match', () => {
+    expect(test({ body: '(\\n|.)*- \\[x\\] checkbox(\\n|.)*' }, 'nothing')).toBe(false);
+  });
 
-    expect(getMatchedLabels(config)).toEqual([]);
+  it('should match checkbox', () => {
+    expect(
+      test({ body: '(\\n|.)*- \\[x\\] checkbox(\\n|.)*' }, 'What is the issue:\n- [x] checkbox\n- [ ] no problem'),
+    ).toBe(true);
+  });
+
+  it('should match checkbox with newline', () => {
+    expect(
+      test(
+        { body: '(\\n|.)*- \\[x\\] checkbox(\\n|.)*' },
+        'What is the issue\nnewline:\n- [x] checkbox\n- [ ] no problem',
+      ),
+    ).toBe(true);
+  });
+
+  it('should match something', () => {
+    expect(test({ body: '.* something .*' }, 'this is something here')).toBe(true);
   });
 });
 
-describe('pull_request', () => {
-  it('should have checkbox', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 1,
-        title: 'feat: spaceship',
-        body: 'What is the issue:\n- [x] checkbox\n- [ ] no problem',
-      },
-    };
-
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['checkbox']);
-  });
-
-  it('should have something', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 1,
-        title: 'chore: refactoring',
-        body: ' something ',
-      },
-    };
-
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['something']);
-  });
-
-  it('should have something newline', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 1,
-        title: 'chore: refactoring',
-        body: 'one\n said something here \n',
-      },
-    };
-
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['something']);
-  });
-});
-
-describe('issue', () => {
-  it('should have checkbox', async function () {
-    github.context.payload = {
-      issue: {
-        number: 1,
-        title: 'feat: spaceship',
-        body: 'What is the issue:\n- [x] checkbox\n- [ ] no problem',
-      },
-    };
-
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['checkbox']);
-  });
-
-  it('should have something', async function () {
-    github.context.payload = {
-      issue: {
-        number: 1,
-        title: 'chore: refactoring',
-        body: ' something ',
-      },
-    };
-
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['something']);
-  });
-
-  it('should have something newline', async function () {
-    github.context.payload = {
-      issue: {
-        number: 1,
-        title: 'chore: refactoring',
-        body: 'one\n said something here \n',
-      },
-    };
-
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['something']);
-  });
-});

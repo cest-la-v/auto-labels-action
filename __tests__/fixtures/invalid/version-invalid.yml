@@ -2,5 +2,5 @@ version: v100
 
 labels:
   - label: 'feat'
-    matcher:
+    include:
       title: '^feat:.*'

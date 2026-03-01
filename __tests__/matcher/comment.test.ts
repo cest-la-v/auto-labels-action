@@ -1,82 +1,34 @@
-import match from '../../src/matcher/comment';
-import * as github from '@actions/github';
-import { Config } from '../../src/config';
-
-function getMatchedLabels(config: Config): string[] {
-  // @ts-ignore
-  return match(null, config);
-}
-
-const config: Config = {
-  version: 'v1',
-  labels: [
-    {
-      label: 'checkbox',
-      matcher: {
-        comment: '(\\n|.)*- \\[x\\] checkbox(\\n|.)*',
-      },
-    },
-    {
-      label: 'stale',
-      matcher: {
-        comment: '/stale',
-      },
-    },
-  ],
-};
-
-describe('empty', function () {
-  it('should be undefined', async function () {
-    github.context.payload = {};
-    expect(getMatchedLabels(config)).toEqual([]);
-  });
-
-  it('comment should be empty', async function () {
-    github.context.payload = {
-      comment: {
-        id: 1,
-        body: 'nothing',
-      },
-    };
-
-    expect(getMatchedLabels(config)).toEqual([]);
-  });
-});
+import { test } from '../../src/matcher/comment';
 
 describe('comment', () => {
-  it('should have checkbox', async function () {
-    github.context.payload = {
-      comment: {
-        id: 1,
-        body: 'What is the issue:\n- [x] checkbox\n- [ ] no problem',
-      },
-    };
-
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['checkbox']);
+  it('should return false when comment field is undefined', () => {
+    expect(test({}, '/stale')).toBe(false);
   });
 
-  it('should have checkbox newline again', async function () {
-    github.context.payload = {
-      comment: {
-        id: 1,
-        body: 'What is the issue\nnewline:\n- [x] checkbox\n- [ ] no problem',
-      },
-    };
-
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['checkbox']);
+  it('should return false when text is undefined', () => {
+    expect(test({ comment: '/stale' }, undefined)).toBe(false);
   });
 
-  it('should have stale', async function () {
-    github.context.payload = {
-      comment: {
-        id: 1,
-        body: '/stale',
-      },
-    };
+  it('should not match', () => {
+    expect(test({ comment: '(\\n|.)*- \\[x\\] checkbox(\\n|.)*' }, 'nothing')).toBe(false);
+  });
 
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['stale']);
+  it('should match checkbox', () => {
+    expect(
+      test({ comment: '(\\n|.)*- \\[x\\] checkbox(\\n|.)*' }, 'What is the issue:\n- [x] checkbox\n- [ ] no problem'),
+    ).toBe(true);
+  });
+
+  it('should match checkbox with newline', () => {
+    expect(
+      test(
+        { comment: '(\\n|.)*- \\[x\\] checkbox(\\n|.)*' },
+        'What is the issue\nnewline:\n- [x] checkbox\n- [ ] no problem',
+      ),
+    ).toBe(true);
+  });
+
+  it('should match stale', () => {
+    expect(test({ comment: '/stale' }, '/stale')).toBe(true);
   });
 });

@@ -1,167 +1,33 @@
-import match from '../../src/matcher/title';
-import * as github from '@actions/github';
-import { Config } from '../../src/config';
+import { test } from '../../src/matcher/title';
 
-function getMatchedLabels(config: Config): string[] {
-  // @ts-ignore
-  return match(null, config);
-}
-
-const config: Config = {
-  version: 'v1',
-  labels: [
-    {
-      label: 'feat',
-      matcher: {
-        title: '^feat: .+',
-      },
-    },
-    {
-      label: 'fix',
-      matcher: {
-        title: '^fix: .+',
-      },
-    },
-    {
-      label: 'docs',
-      matcher: {
-        title: '^docs: .+',
-      },
-    },
-    {
-      label: 'chore',
-      matcher: {
-        title: '^chore: .+',
-      },
-    },
-  ],
-};
-
-describe('empty', function () {
-  it('no payload should be undefined', async function () {
-    github.context.payload = {};
-    expect(getMatchedLabels(config)).toEqual([]);
+describe('title', () => {
+  it('should return false when title field is undefined', () => {
+    expect(test({}, 'feat: spaceship')).toBe(false);
   });
 
-  it('pull_request should be empty', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 1,
-        title: 'nothing interesting',
-      },
-    };
-
-    expect(getMatchedLabels(config)).toEqual([]);
+  it('should return false when text is undefined', () => {
+    expect(test({ title: '^feat: .+' }, undefined)).toBe(false);
   });
 
-  it('issue should be empty', async function () {
-    github.context.payload = {
-      issue: {
-        number: 1,
-        title: 'nothing interesting',
-      },
-    };
-
-    expect(getMatchedLabels(config)).toEqual([]);
-  });
-});
-
-describe('pull_request', () => {
-  it('should have feat', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 1,
-        title: 'feat: spaceship',
-      },
-    };
-
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['feat']);
+  it('should not match', () => {
+    expect(test({ title: '^feat: .+' }, 'nothing interesting')).toBe(false);
   });
 
-  it('should have chore', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 1,
-        title: 'chore: refactoring',
-      },
-    };
+  describe('matching', () => {
+    it('should match feat', () => {
+      expect(test({ title: '^feat: .+' }, 'feat: spaceship')).toBe(true);
+    });
 
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['chore']);
-  });
+    it('should match fix', () => {
+      expect(test({ title: '^fix: .+' }, 'fix: typo')).toBe(true);
+    });
 
-  it('should have fix', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 1,
-        title: 'fix: something',
-      },
-    };
+    it('should match docs', () => {
+      expect(test({ title: '^docs: .+' }, 'docs: update readme')).toBe(true);
+    });
 
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['fix']);
-  });
-
-  it('should have docs', async function () {
-    github.context.payload = {
-      pull_request: {
-        number: 1,
-        title: 'docs: comment',
-      },
-    };
-
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['docs']);
-  });
-});
-
-describe('issue', () => {
-  it('should have feat', async function () {
-    github.context.payload = {
-      issue: {
-        number: 1,
-        title: 'feat: spaceship',
-      },
-    };
-
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['feat']);
-  });
-
-  it('should have chore', async function () {
-    github.context.payload = {
-      issue: {
-        number: 1,
-        title: 'chore: refactoring',
-      },
-    };
-
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['chore']);
-  });
-
-  it('should have fix', async function () {
-    github.context.payload = {
-      issue: {
-        number: 1,
-        title: 'fix: something',
-      },
-    };
-
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['fix']);
-  });
-
-  it('should have docs', async function () {
-    github.context.payload = {
-      issue: {
-        number: 1,
-        title: 'docs: comment',
-      },
-    };
-
-    const labels = getMatchedLabels(config);
-    expect(labels).toEqual(['docs']);
+    it('should match chore', () => {
+      expect(test({ title: '^chore: .+' }, 'chore: update deps')).toBe(true);
+    });
   });
 });

@@ -2,5 +2,5 @@ version: v1
 
 labels:
   - label: "not escaped properly"
-    matcher:
+    include:
       title: "\[0-9\]"
