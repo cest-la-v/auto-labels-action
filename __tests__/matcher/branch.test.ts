@@ -17,4 +17,3 @@ describe('branch', () => {
     expect(test({ branch: '^feat/.*' }, 'feat/spaceship')).toBe(true);
   });
 });
-

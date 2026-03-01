@@ -3,28 +3,28 @@ version: v1
 labels:
   - label: 'feat'
     include:
-      mode: "ANY"
+      mode: 'ANY'
       title: '^feat:.*'
       branch: '^feat/.*'
       commits: '^feat:.*'
 
   - label: dependabot
     include:
-      mode: "ANY"
+      mode: 'ANY'
       title: '^chore(deps).*'
       branch: '^dependabot/.*'
       commits: '^chore(deps).*'
 
   - label: 'fix'
     include:
-      mode: "ANY"
+      mode: 'ANY'
       title: '^fix:.*'
       branch: '^fix/.*'
       commits: '^fix:.*'
 
   - label: 'chore'
     include:
-      mode: "ANY"
+      mode: 'ANY'
       title: "^chore(\\((deps|ci)\\))?:.*"
       branch: '^chore/.*'
       commits: "^chore(\\((deps|ci)\\))?:.*"
@@ -35,7 +35,7 @@ labels:
 
   - label: 'docs'
     include:
-      mode: "ANY"
+      mode: 'ANY'
       title: '^docs:.*'
       branch: '^docs/.*'
       commits: '^docs:.*'

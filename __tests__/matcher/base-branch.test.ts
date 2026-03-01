@@ -25,4 +25,3 @@ describe('base-branch', () => {
     expect(test({ baseBranch: 'master' }, 'main')).toBe(false);
   });
 });
-

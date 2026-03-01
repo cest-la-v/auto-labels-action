@@ -32,4 +32,3 @@ describe('body', () => {
     expect(test({ body: '.* something .*' }, 'this is something here')).toBe(true);
   });
 });
-

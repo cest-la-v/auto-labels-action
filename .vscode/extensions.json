@@ -1,6 +1,3 @@
 {
-    "recommendations": [
-        "sehejjain.lsp-mcp-bridge",
-        "esbenp.prettier-vscode"
-    ]
+  "recommendations": ["sehejjain.lsp-mcp-bridge", "esbenp.prettier-vscode"]
 }

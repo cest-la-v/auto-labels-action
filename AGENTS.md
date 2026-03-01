@@ -19,12 +19,13 @@ src/matcher/        — One file per matcher type (title, body, comment, branch,
 ## Config Schema
 
 Labels use `include`/`exclude` (not `matcher`). Example:
+
 ```yaml
 labels:
   - label: breaking
     include:
-      mode: ANY       # optional; ALL (default) = all defined fields must match
-      title: "/^feat!.*/"
+      mode: ANY # optional; ALL (default) = all defined fields must match
+      title: '/^feat!.*/'
       author:
         - renovate[bot]
     exclude:
@@ -43,19 +44,25 @@ checks:
 ## Key Patterns
 
 ### Adding a new matcher
+
 Each matcher in `src/matcher/` exports a `test()` function with the signature:
+
 ```ts
 export function test(fields: MatcherFields, value: <type>): boolean
 ```
+
 It reads its field from `fields` (e.g. `fields.title`), returns `false` if undefined, and returns the match result. After creating the matcher file, call it inside `labels.ts`'s `collectResults()` function.
 
 ### Config validation (io-ts)
+
 `src/config.ts` defines the schema with `io-ts` codecs. Extend `MatcherFields` (a `t.partial`) to add new matcher fields — the type is both the runtime validator and the TypeScript type via `t.TypeOf<typeof MatcherFields>`. `Include` extends `MatcherFields` with an optional `mode` field. Validation errors are surfaced via `io-ts-reporters` with a descriptive message.
 
 ### `sync: true` labels
+
 Labels with `sync: true` are removed from the PR/issue when their matcher no longer matches. Removal is skipped for `issue_comment` and `push` events — only `pull_request`, `pull_request_target`, and `issue` events trigger removal.
 
 ### Checks
+
 `checks.ts` maps each `Check` config entry to a `StatusCheck` by evaluating `any`/`all`/`none` label conditions. Checks are only created for `pull_request` events (not issues).
 
 ## Developer Workflows
@@ -79,27 +86,27 @@ npm run format        # prettier --write
 
 ## External Dependencies to Know
 
-| Package | Purpose |
-|---|---|
-| `@actions/core` / `@actions/github` | GitHub Actions SDK; context, inputs, Octokit |
-| `io-ts` + `fp-ts` | Runtime config schema validation |
-| `io-ts-reporters` | Human-readable io-ts decode error messages |
-| `minimatch` | Glob matching for the `files` matcher |
-| `lodash` | `uniq`, `concat`, `difference` for label set operations |
+| Package                             | Purpose                                                 |
+| ----------------------------------- | ------------------------------------------------------- |
+| `@actions/core` / `@actions/github` | GitHub Actions SDK; context, inputs, Octokit            |
+| `io-ts` + `fp-ts`                   | Runtime config schema validation                        |
+| `io-ts-reporters`                   | Human-readable io-ts decode error messages              |
+| `minimatch`                         | Glob matching for the `files` matcher                   |
+| `lodash`                            | `uniq`, `concat`, `difference` for label set operations |
 
 ## TypeScript Navigation — LSP Tools
 
 The VS Code extension **LSP MCP Bridge** (`sehejjain.lsp-mcp-bridge`) is installed in this workspace. It exposes the TypeScript language server as Copilot tools. All agents are configured to **prefer these tools over grep/file-read** when navigating source code:
 
-| Task | Tool |
-|---|---|
-| Find definition of a type / function | `lsp_definition` |
-| Find all usages / callers | `lsp_references` |
-| Get type, generics, or JSDoc | `lsp_hover` |
+| Task                                    | Tool                    |
+| --------------------------------------- | ----------------------- |
+| Find definition of a type / function    | `lsp_definition`        |
+| Find all usages / callers               | `lsp_references`        |
+| Get type, generics, or JSDoc            | `lsp_hover`             |
 | Locate a symbol by name across the repo | `lsp_workspace_symbols` |
-| Get the full outline of a file | `lsp_document_symbols` |
-| Understand function parameters | `lsp_signature_help` |
-| Check quick-fixes after an edit | `lsp_code_actions` |
+| Get the full outline of a file          | `lsp_document_symbols`  |
+| Understand function parameters          | `lsp_signature_help`    |
+| Check quick-fixes after an edit         | `lsp_code_actions`      |
 
 Use `search` (grep) only for YAML/fixture files or when no file URI is known yet. Use `read` only when you need exact line content to quote or edit.
 
@@ -107,12 +114,12 @@ Use `search` (grep) only for YAML/fixture files or when no file URI is known yet
 
 Four agents live in `.github/agents/`. For non-trivial tasks, switch to the `orchestrator` agent — it sequences the others and enforces plan approval and commit gates. For simple single-file fixes, use the default agent directly.
 
-| Agent | File | Role | Model |
-|---|---|---|---|
-| `orchestrator` | `orchestrator.agent.md` | Drives the full plan → implement → review → commit loop | Claude Sonnet 4.6 |
-| `planner` | `planner.agent.md` | Research codebase, produce hit list & plan — no code | Claude Sonnet 4.6 |
-| `implementer` | `implementer.agent.md` | TDD: write failing tests → minimal code → green → lint | Claude Haiku 4.5 |
-| `reviewer` | `reviewer.agent.md` | Read-only review gate; returns APPROVED / NEEDS_REVISION / FAILED | Claude Sonnet 4.6 |
+| Agent          | File                    | Role                                                              | Model             |
+| -------------- | ----------------------- | ----------------------------------------------------------------- | ----------------- |
+| `orchestrator` | `orchestrator.agent.md` | Drives the full plan → implement → review → commit loop           | Claude Sonnet 4.6 |
+| `planner`      | `planner.agent.md`      | Research codebase, produce hit list & plan — no code              | Claude Sonnet 4.6 |
+| `implementer`  | `implementer.agent.md`  | TDD: write failing tests → minimal code → green → lint            | Claude Haiku 4.5  |
+| `reviewer`     | `reviewer.agent.md`     | Read-only review gate; returns APPROVED / NEEDS_REVISION / FAILED | Claude Sonnet 4.6 |
 
 **Scratchpad / task state**: the orchestrator writes progress to `plans/` (gitignored by default). Do not put ephemeral state in `AGENTS.md`.
 

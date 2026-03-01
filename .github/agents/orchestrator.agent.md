@@ -1,7 +1,21 @@
 ---
 name: orchestrator
 description: Orchestrates the full development lifecycle — planning, implementation, review, and commit. Use this agent for any non-trivial task (new matcher, schema change, multi-file refactor). It sequences the planner, implementer, and reviewer subagents and enforces mandatory user stops before each commit.
-tools: ["agent", "read", "edit", "search", "execute", "web", "todo", "lsp_definition", "lsp_references", "lsp_hover", "lsp_workspace_symbols", "lsp_document_symbols"]
+tools:
+  [
+    'agent',
+    'read',
+    'edit',
+    'search',
+    'execute',
+    'web',
+    'todo',
+    'lsp_definition',
+    'lsp_references',
+    'lsp_hover',
+    'lsp_workspace_symbols',
+    'lsp_document_symbols',
+  ]
 model: Claude Sonnet 4.6 (copilot)
 ---
 
@@ -19,6 +33,7 @@ Read `AGENTS.md` at the start of every session for architecture, schema, and con
 4. Once approved, write the plan to `plans/<task-name>-plan.md`.
 
 **Plan format:**
+
 ```
 ## Plan: <Task Title>
 
@@ -42,36 +57,45 @@ Read `AGENTS.md` at the start of every session for architecture, schema, and con
 ### Phase 2 — Implement → Review → Commit (repeat for each phase)
 
 #### 2A. Implement
+
 Invoke the `implementer` subagent with:
+
 - Phase number and objective
 - Files and functions to create or modify
 - Test requirements (specific test cases to write)
 - Instruction to work autonomously and follow TDD (failing tests first, then code)
 
 #### 2B. Review
+
 Invoke the `reviewer` subagent with:
+
 - Phase objective and acceptance criteria
 - List of files modified/created by the implementer
 
 Evaluate the verdict:
+
 - **APPROVED** → proceed to 2C
 - **NEEDS_REVISION** → re-invoke `implementer` with the reviewer's specific feedback, then re-invoke `reviewer`
 - **FAILED** → **MANDATORY STOP** — present the failure to the user and ask how to proceed
 
 #### 2C. Commit
+
 1. Present a phase summary to the user:
    - What was accomplished
    - Files created/changed
    - Test result
    - Review status
 2. Generate a git commit message:
+
    ```
    feat/fix/refactor/test/chore: Short description (max 50 chars)
 
    - Bullet describing change 1
    - Bullet describing change 2
    ```
+
    If any `src/` files changed, remind the user: **run `npm run package` before committing** (`dist/index.js` must stay in sync).
+
 3. Write `plans/<task-name>-phase-N-complete.md` with the phase summary and commit message.
 4. **MANDATORY STOP** — wait for the user to make the commit and confirm before proceeding.
 
@@ -80,7 +104,9 @@ Evaluate the verdict:
 ### Phase 3 — Complete
 
 When all phases are done:
+
 1. Write `plans/<task-name>-complete.md`:
+
    ```
    ## Complete: <Task Title>
 
@@ -96,6 +122,7 @@ When all phases are done:
 
    **Test coverage:** <N> tests passing
    ```
+
 2. Present the completion summary to the user.
 
 ---
@@ -103,6 +130,7 @@ When all phases are done:
 ## Mandatory stops
 
 Never proceed past these points without explicit user confirmation:
+
 - After presenting the plan (before any implementation)
 - After each phase review is APPROVED and a commit message is provided
 - If a reviewer verdict is FAILED

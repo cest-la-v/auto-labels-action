@@ -1,7 +1,14 @@
 import { test } from '../../src/matcher/files';
 
 // File lists used in test scenarios (matching the original fixture data)
-const files1 = ['.github/labeler.yml', 'app/main.js', 'security/main.js', 'security/abc/abc.js', 'setup/abc/abc.xml', 'setup/abc/abc.js'];
+const files1 = [
+  '.github/labeler.yml',
+  'app/main.js',
+  'security/main.js',
+  'security/abc/abc.js',
+  'setup/abc/abc.xml',
+  'setup/abc/abc.js',
+];
 const files2 = ['.github/labeler.yml'];
 const files3 = ['app/main.js', 'setup/abc/abc.js', 'test/abc/abc.js'];
 const files4 = ['security/main.js'];
