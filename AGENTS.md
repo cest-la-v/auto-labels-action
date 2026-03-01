@@ -68,6 +68,7 @@ npm run format        # prettier --write
 - Integration tests (`__tests__/labels.test.ts`, `__tests__/config.test.ts`) use a mock GitHub client that reads fixture files from `__tests__/fixtures/` as if they were fetched from the API.
 - Invalid config scenarios live in `__tests__/fixtures/invalid/` and are tested to throw.
 - `@ts-ignore` is expected in test mock clients — do not remove them.
+- **Self-referential live test**: `.github/workflows/ci-use.yml` runs the action against its own PRs/issues. It must set `env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}` on the `uses: ./` step — there is no input fallback. Keep this in sync whenever the token or input interface changes.
 
 ## External Dependencies to Know
 

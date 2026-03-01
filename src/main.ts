@@ -4,7 +4,10 @@ import { labels, mergeLabels } from './labels';
 import { Config, getConfig } from './config';
 import { checks, StatusCheck } from './checks';
 
-const githubToken = core.getInput('github-token');
+const githubToken = process.env.GITHUB_TOKEN;
+if (!githubToken) {
+  throw new Error('GITHUB_TOKEN environment variable is not set. Add `env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}` to your workflow step.');
+}
 const configPath = core.getInput('config-path', { required: true });
 const configRepo = core.getInput('config-repo');
 
