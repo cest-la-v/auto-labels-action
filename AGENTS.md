@@ -121,4 +121,4 @@ If you change this file, tell the user — it's your memory, and they should kno
 
 ---
 
-_This file is yours to evolve. As you learn more about how to work on this repository better and efficiently, update it._
+_This file is yours to evolve. As you learn more important or essential things about how to work on this repository better and efficiently, update it._
