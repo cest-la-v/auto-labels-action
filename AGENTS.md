@@ -87,6 +87,22 @@ npm run format        # prettier --write
 | `minimatch` | Glob matching for the `files` matcher |
 | `lodash` | `uniq`, `concat`, `difference` for label set operations |
 
+## TypeScript Navigation — LSP Tools
+
+The VS Code extension **LSP MCP Bridge** (`sehejjain.lsp-mcp-bridge`) is installed in this workspace. It exposes the TypeScript language server as Copilot tools. All agents are configured to **prefer these tools over grep/file-read** when navigating source code:
+
+| Task | Tool |
+|---|---|
+| Find definition of a type / function | `lsp_definition` |
+| Find all usages / callers | `lsp_references` |
+| Get type, generics, or JSDoc | `lsp_hover` |
+| Locate a symbol by name across the repo | `lsp_workspace_symbols` |
+| Get the full outline of a file | `lsp_document_symbols` |
+| Understand function parameters | `lsp_signature_help` |
+| Check quick-fixes after an edit | `lsp_code_actions` |
+
+Use `search` (grep) only for YAML/fixture files or when no file URI is known yet. Use `read` only when you need exact line content to quote or edit.
+
 ## Custom Agents
 
 Four agents live in `.github/agents/`. For non-trivial tasks, switch to the `orchestrator` agent — it sequences the others and enforces plan approval and commit gates. For simple single-file fixes, use the default agent directly.

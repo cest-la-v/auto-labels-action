@@ -1,7 +1,7 @@
 ---
 name: orchestrator
 description: Orchestrates the full development lifecycle for multi-labeler — planning, implementation, review, and commit. Use this agent for any non-trivial task (new matcher, schema change, multi-file refactor). It sequences the planner, implementer, and reviewer subagents and enforces mandatory user stops before each commit.
-tools: ["agent", "read", "edit", "search", "execute", "web", "todo"]
+tools: ["agent", "read", "edit", "search", "execute", "web", "todo", "lsp_definition", "lsp_references", "lsp_hover", "lsp_workspace_symbols", "lsp_document_symbols"]
 model: Claude Sonnet 4.6 (copilot)
 ---
 
