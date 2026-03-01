@@ -1,6 +1,6 @@
 ---
 name: planner
-description: Analyzes the auto-labels-action codebase and produces a concise, actionable implementation plan before any code changes are made. Use this agent first when adding a new matcher, changing the config schema, or doing any non-trivial refactor.
+description: Analyzes the codebase and produces a concise, actionable implementation plan before any code changes are made. Use this agent first when adding a new matcher, changing the config schema, or doing any non-trivial refactor.
 tools: ["read", "search", "web", "lsp_definition", "lsp_references", "lsp_hover", "lsp_workspace_symbols", "lsp_document_symbols"]
 model: Claude Sonnet 4.6 (copilot)
 argument-hint: The task or change to plan — be specific about what needs to change and any constraints

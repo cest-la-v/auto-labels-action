@@ -1,6 +1,6 @@
 ---
 name: implementer
-description: Implements a single phase of work in auto-labels-action using strict TDD — writes failing tests first, then minimal production code to make them pass. Covers both src/ and __tests__/.
+description: Implements a single phase of work using strict TDD — writes failing tests first, then minimal production code to make them pass. Covers both src/ and __tests__/.
 tools: ["read", "edit", "search", "execute", "web", "todo", "lsp_definition", "lsp_references", "lsp_hover", "lsp_workspace_symbols", "lsp_document_symbols", "lsp_signature_help", "lsp_code_actions"]
 model: Claude Haiku 4.5 (copilot)
 argument-hint: Phase number, objective, files/functions to create or modify, and test requirements

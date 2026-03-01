@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Reviews the implementation of a completed phase in auto-labels-action. Read-only — never edits files. Returns a structured verdict (APPROVED / NEEDS_REVISION / FAILED) back to the orchestrator.
+description: Reviews the implementation of a completed phase. Read-only — never edits files. Returns a structured verdict (APPROVED / NEEDS_REVISION / FAILED) back to the orchestrator.
 tools: ["read", "search", "lsp_definition", "lsp_references", "lsp_hover", "lsp_workspace_symbols", "lsp_document_symbols"]
 model: Claude Sonnet 4.6 (copilot)
 argument-hint: Phase objective, acceptance criteria, and list of files that were created or modified
