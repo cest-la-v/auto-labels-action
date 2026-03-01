@@ -1,8 +1,6 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
   merge_group:
@@ -31,19 +29,6 @@ jobs:
       - run: npm run package
 
       - run: git diff --exit-code || (echo "::error ::Files have been modified" && exit 1)
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5.0.0
-
-      - uses: actions/setup-node@v4.4.0
-        with:
-          node-version-file: '.nvmrc'
-
-      - run: npm install
-      - run: npm run build
 
   test:
     name: Test
