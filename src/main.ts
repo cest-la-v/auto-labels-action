@@ -1,6 +1,6 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import { labels, mergeLabels } from './labeler';
+import { labels, mergeLabels } from './labels';
 import { Config, getConfig } from './config';
 import { checks, StatusCheck } from './checks';
 

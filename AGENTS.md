@@ -9,7 +9,7 @@
 ```
 src/main.ts         — Entry point: reads inputs, orchestrates labeling + check creation
 src/config.ts       — Parses and validates .github/labeler.yml using io-ts (runtime type-checking)
-src/labeler.ts      — Evaluates labels per-label (include/exclude/mode), merges with current PR/issue labels
+src/labels.ts       — Evaluates labels per-label (include/exclude/mode), merges with current PR/issue labels
 src/checks.ts       — Evaluates check conditions against matched labels, produces StatusCheck objects
 src/matcher/        — One file per matcher type (title, body, comment, branch, base-branch, commits, files, author)
 ```
@@ -47,7 +47,7 @@ Each matcher in `src/matcher/` exports a `test()` function with the signature:
 ```ts
 export function test(fields: MatcherFields, value: <type>): boolean
 ```
-It reads its field from `fields` (e.g. `fields.title`), returns `false` if undefined, and returns the match result. After creating the matcher file, call it inside `labeler.ts`'s `collectResults()` function.
+It reads its field from `fields` (e.g. `fields.title`), returns `false` if undefined, and returns the match result. After creating the matcher file, call it inside `labels.ts`'s `collectResults()` function.
 
 ### Config validation (io-ts)
 `src/config.ts` defines the schema with `io-ts` codecs. Extend `MatcherFields` (a `t.partial`) to add new matcher fields — the type is both the runtime validator and the TypeScript type via `t.TypeOf<typeof MatcherFields>`. `Include` extends `MatcherFields` with an optional `mode` field. Validation errors are surfaced via `io-ts-reporters` with a descriptive message.
@@ -73,7 +73,7 @@ npm run format        # prettier --write
 ## Testing Conventions
 
 - Matcher unit tests (`__tests__/matcher/*.test.ts`) call `test(fields, value)` directly with plain objects — no `github.context.payload` mocking needed.
-- Integration tests (`__tests__/labeler.test.ts`, `__tests__/config.test.ts`) use a mock GitHub client that reads fixture files from `__tests__/fixtures/` as if they were fetched from the API.
+- Integration tests (`__tests__/labels.test.ts`, `__tests__/config.test.ts`) use a mock GitHub client that reads fixture files from `__tests__/fixtures/` as if they were fetched from the API.
 - Invalid config scenarios live in `__tests__/fixtures/invalid/` and are tested to throw.
 - `@ts-ignore` is expected in test mock clients — do not remove them.
 
