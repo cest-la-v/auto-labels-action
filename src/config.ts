@@ -41,7 +41,7 @@ const Label = t.intersection([
     label: t.string,
   }),
   t.partial({
-    sync: t.boolean,
+    removeOnMismatch: t.boolean,
     include: Include,
     exclude: MatcherFields,
   }),

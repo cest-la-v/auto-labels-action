@@ -1,0 +1,221 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/fuxingloh/multi-labeler/blob/main/docs/labels.schema.json",
+  "title": "Auto Labels — labels.yml",
+  "description": "Schema for .github/labeler.yml used by the auto-labels-action.",
+  "type": "object",
+  "required": ["version"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "v1",
+      "description": "Config format version. Must be 'v1'."
+    },
+    "labels": {
+      "type": "array",
+      "description": "List of label rules. Each rule defines when a label is added or removed.",
+      "items": { "$ref": "#/definitions/Label" }
+    },
+    "checks": {
+      "type": "array",
+      "description": "List of commit-status check rules derived from matched labels.",
+      "items": { "$ref": "#/definitions/Check" }
+    },
+    "comments": {
+      "$ref": "#/definitions/Comments"
+    }
+  },
+  "definitions": {
+    "MatcherFields": {
+      "type": "object",
+      "description": "Fields available for matching. All fields are optional; omitted fields are not evaluated.",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Regex (e.g., '/^feat.*/') or plain string matched against the PR/issue title."
+        },
+        "body": {
+          "type": "string",
+          "description": "Regex or plain string matched against the PR/issue body."
+        },
+        "comment": {
+          "type": "string",
+          "description": "Regex or plain string matched against an issue/PR comment (issue_comment event)."
+        },
+        "commits": {
+          "type": "string",
+          "description": "Regex or plain string matched against any commit message in the PR."
+        },
+        "branch": {
+          "type": "string",
+          "description": "Regex or plain string matched against the PR head branch name."
+        },
+        "baseBranch": {
+          "type": "string",
+          "description": "Regex or plain string matched against the PR base branch name."
+        },
+        "author": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ],
+          "description": "GitHub login(s) to match against the PR/issue author. A single string or a list."
+        },
+        "files": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "A single glob pattern matched against changed files."
+            },
+            {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "A list of glob patterns; matches if any pattern matches a changed file."
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "Advanced file matching with any/all glob lists and/or a count constraint.",
+              "properties": {
+                "any": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "Matches if at least one changed file matches any of these globs."
+                },
+                "all": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "Matches if every changed file matches at least one of these globs."
+                },
+                "count": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "Matches based on the total number of changed files.",
+                  "properties": {
+                    "lte": { "type": "number", "description": "File count ≤ this value." },
+                    "gte": { "type": "number", "description": "File count ≥ this value." },
+                    "eq":  { "type": "number", "description": "File count = this value." },
+                    "neq": { "type": "number", "description": "File count ≠ this value." }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "Include": {
+      "allOf": [
+        { "$ref": "#/definitions/MatcherFields" },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": ["ANY", "ALL"],
+              "default": "ALL",
+              "description": "ALL (default): every defined field must match. ANY: at least one field must match."
+            }
+          }
+        }
+      ]
+    },
+    "Label": {
+      "type": "object",
+      "required": ["label"],
+      "additionalProperties": false,
+      "description": "A single label rule.",
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "The GitHub label name to add or remove."
+        },
+        "removeOnMismatch": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, remove the label if the include condition no longer matches (pull_request / issue events only)."
+        },
+        "include": {
+          "$ref": "#/definitions/Include",
+          "description": "When all (or any, with mode: ANY) defined fields match, the label is added. A label with no include is never auto-added."
+        },
+        "exclude": {
+          "$ref": "#/definitions/MatcherFields",
+          "description": "When any defined field matches, the label is NOT added (overrides include). An exclude with no fields never excludes."
+        }
+      }
+    },
+    "Check": {
+      "type": "object",
+      "required": ["context"],
+      "additionalProperties": false,
+      "description": "A commit-status check derived from matched labels. Only emitted for pull_request events.",
+      "properties": {
+        "context": {
+          "type": "string",
+          "description": "The commit-status context name shown in the GitHub UI."
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Optional details URL attached to the commit status."
+        },
+        "description": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "A single description used for both success and failure states."
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "success": { "type": "string", "description": "Description shown when the check passes." },
+                "failure": { "type": "string", "description": "Description shown when the check fails." }
+              }
+            }
+          ]
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Label conditions that determine the check state (success = conditions met, failure = not met).",
+          "properties": {
+            "any": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Check passes if the PR has at least one of these labels."
+            },
+            "all": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Check passes if the PR has all of these labels."
+            },
+            "none": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Check passes if the PR has none of these labels."
+            }
+          }
+        }
+      }
+    },
+    "Comments": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Optional comment templates posted on matching events.",
+      "properties": {
+        "issues": {
+          "type": "string",
+          "description": "Comment body posted on issue events."
+        },
+        "prs": {
+          "type": "string",
+          "description": "Comment body posted on pull_request events."
+        }
+      }
+    }
+  }
+}

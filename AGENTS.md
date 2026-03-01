@@ -18,28 +18,13 @@ src/matcher/        — One file per matcher type (title, body, comment, branch,
 
 ## Config Schema
 
-Labels use `include`/`exclude` (not `matcher`). Example:
+Full JSON Schema with field-level descriptions: [docs/labels.schema.json](docs/labels.schema.json).
 
-```yaml
-labels:
-  - label: breaking
-    include:
-      mode: ANY # optional; ALL (default) = all defined fields must match
-      title: '/^feat!.*/'
-      author:
-        - renovate[bot]
-    exclude:
-      author:
-        - app-manifest[bot]
-checks:
-  - context: 'Semantic PR'
-    labels:
-      any: [feat, fix]
-```
-
+Key rules:
 - A label with no `include` is **never** auto-added.
 - `exclude` with no fields never excludes.
-- `sync: true` on a label causes removal when the label no longer matches.
+- `removeOnMismatch: true` on a label causes removal when the label no longer matches.
+- `include.mode`: `ALL` (default) = every defined field must match; `ANY` = at least one must match.
 
 ## Key Patterns
 
@@ -57,9 +42,9 @@ It reads its field from `fields` (e.g. `fields.title`), returns `false` if undef
 
 `src/config.ts` defines the schema with `io-ts` codecs. Extend `MatcherFields` (a `t.partial`) to add new matcher fields — the type is both the runtime validator and the TypeScript type via `t.TypeOf<typeof MatcherFields>`. `Include` extends `MatcherFields` with an optional `mode` field. Validation errors are surfaced via `io-ts-reporters` with a descriptive message.
 
-### `sync: true` labels
+### `removeOnMismatch: true` labels
 
-Labels with `sync: true` are removed from the PR/issue when their matcher no longer matches. Removal is skipped for `issue_comment` and `push` events — only `pull_request`, `pull_request_target`, and `issue` events trigger removal.
+Labels with `removeOnMismatch: true` are removed from the PR/issue when their matcher no longer matches. Removal is skipped for `issue_comment` and `push` events — only `pull_request`, `pull_request_target`, and `issue` events trigger removal.
 
 ### Checks
 

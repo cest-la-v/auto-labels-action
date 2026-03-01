@@ -228,15 +228,15 @@ describe('mergeLabels, sync config', () => {
     labels: [
       {
         label: 'sync1',
-        sync: true,
+        removeOnMismatch: true,
       },
       {
         label: 'sync2',
-        sync: true,
+        removeOnMismatch: true,
       },
       {
         label: 'no-sync1',
-        sync: false,
+        removeOnMismatch: false,
       },
       {
         label: 'no-sync2',

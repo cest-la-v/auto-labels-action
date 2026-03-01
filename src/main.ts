@@ -40,8 +40,8 @@ async function removeLabels(labels: string[], config: Config): Promise<unknown[]
   return Promise.all(
     (config.labels || [])
       .filter((label) => {
-        // Is sync, not matched in final set of labels
-        return label.sync && !labels.includes(label.label);
+        // removeOnMismatch: remove if no longer in final matched label set
+        return label.removeOnMismatch && !labels.includes(label.label);
       })
       .map((label) => {
         return client.rest.issues
