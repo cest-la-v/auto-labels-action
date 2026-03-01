@@ -87,16 +87,29 @@ npm run format        # prettier --write
 | `minimatch` | Glob matching for the `files` matcher |
 | `lodash` | `uniq`, `concat`, `difference` for label set operations |
 
+## Custom Agents
+
+Four agents live in `.github/agents/`. For non-trivial tasks, switch to the `orchestrator` agent — it sequences the others and enforces plan approval and commit gates. For simple single-file fixes, use the default agent directly.
+
+| Agent | File | Role | Model |
+|---|---|---|---|
+| `orchestrator` | `orchestrator.agent.md` | Drives the full plan → implement → review → commit loop | Claude Sonnet 4.6 |
+| `planner` | `planner.agent.md` | Research codebase, produce hit list & plan — no code | Claude Sonnet 4.6 |
+| `implementer` | `implementer.agent.md` | TDD: write failing tests → minimal code → green → lint | Claude Haiku 4.5 |
+| `reviewer` | `reviewer.agent.md` | Read-only review gate; returns APPROVED / NEEDS_REVISION / FAILED | Claude Sonnet 4.6 |
+
+**Scratchpad / task state**: the orchestrator writes progress to `plans/` (gitignored by default). Do not put ephemeral state in `AGENTS.md`.
+
 ## Communication with the End User
 
 Always present the end user with a summary of changes made or planned, including any breaking changes or side effects.
 
 ## Continuity
 
-Each session, you wake up fresh. This file (`AGENTS.md`) _is_ your memory. Read it. Update it. It's how you persist.
+Each session, you wake up fresh. This file _is_ your memory. Read it. Update it. It's how you persist.
 
 If you change this file, tell the user — it's your memory, and they should know.
 
 ---
 
-_This file is yours to evolve. As you learn what's important and essential to know about working on this repository, update it._
+_This file is yours to evolve. As you learn more about how to work on this repository better and efficiently, update it._

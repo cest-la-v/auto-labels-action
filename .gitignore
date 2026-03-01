@@ -1,3 +1,6 @@
+# Agent plan artifacts (remove this line to commit plans as an audit trail)
+plans/
+
 # Dependency directory
 node_modules
 
