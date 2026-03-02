@@ -20,15 +20,27 @@ jobs:
     steps:
       - uses: actions/checkout@v5.0.0
 
-      - uses: actions/setup-node@v4.4.0
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version-file: '.nvmrc'
+          bun-version-file: '.bun-version'
 
-      - run: npm install
-      - run: npm run build
-      - run: npm run package
+      - run: bun install --frozen-lockfile
+      - run: bun run package
 
-      - run: git diff --exit-code || (echo "::error ::Files have been modified" && exit 1)
+      - run: git diff --exit-code || (echo "::error ::dist/ is out of date — run bun run package and commit" && exit 1)
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: '.bun-version'
+
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
 
   test:
     name: Test
@@ -36,13 +48,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5.0.0
 
-      - uses: actions/setup-node@v4.4.0
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version-file: '.nvmrc'
+          bun-version-file: '.bun-version'
 
-      - run: npm install
-
-      - run: npx jest --ci
+      - run: bun install --frozen-lockfile
+      - run: bun test
 
   lint_prettier:
     name: Lint [prettier]
@@ -50,13 +61,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5.0.0
 
-      - uses: actions/setup-node@v4.4.0
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version-file: '.nvmrc'
+          bun-version-file: '.bun-version'
 
-      - run: npm install
-
-      - run: npx prettier --check .
+      - run: bun install --frozen-lockfile
+      - run: bunx prettier --check .
 
   lint_eslint:
     name: Lint [eslint]
@@ -64,10 +74,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5.0.0
 
-      - uses: actions/setup-node@v4.4.0
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version-file: '.nvmrc'
+          bun-version-file: '.bun-version'
 
-      - run: npm install
-
-      - run: npx eslint src/**/*.ts
+      - run: bun install --frozen-lockfile
+      - run: bunx eslint src/**/*.ts

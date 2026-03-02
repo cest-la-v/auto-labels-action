@@ -1,24 +1,15 @@
+#!/usr/bin/env bun
+
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { labels, mergeLabels } from './labels';
 import { Config, getConfig } from './config';
 import { checks, StatusCheck } from './checks';
 
-const githubToken = process.env.GITHUB_TOKEN;
-if (!githubToken) {
-  throw new Error('GITHUB_TOKEN environment variable is not set. Add `env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}` to your workflow step.');
-}
-const configPath = core.getInput('config-path', { required: true });
-const configRepo = core.getInput('config-repo');
+type OctokitClient = ReturnType<typeof github.getOctokit>;
+type IssuePayload = { number: number };
 
-const client = github.getOctokit(githubToken);
-const payload = github.context.payload.pull_request || github.context.payload.issue;
-
-if (!payload?.number) {
-  throw new Error('Could not get issue_number from pull_request or issue from context');
-}
-
-async function addLabels(labels: string[]): Promise<void> {
+async function addLabels(client: OctokitClient, payload: IssuePayload, labels: string[]): Promise<void> {
   core.setOutput('labels', labels);
 
   if (!labels.length) {
@@ -28,12 +19,17 @@ async function addLabels(labels: string[]): Promise<void> {
   await client.rest.issues.addLabels({
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
-    issue_number: payload!.number,
+    issue_number: payload.number,
     labels: labels,
   });
 }
 
-async function removeLabels(labels: string[], config: Config): Promise<unknown[]> {
+async function removeLabels(
+  client: OctokitClient,
+  payload: IssuePayload,
+  labels: string[],
+  config: Config,
+): Promise<unknown[]> {
   const eventName = github.context.eventName;
   if (!['pull_request', 'pull_request_target', 'issue'].includes(eventName)) {
     return [];
@@ -50,7 +46,7 @@ async function removeLabels(labels: string[], config: Config): Promise<unknown[]
           .removeLabel({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
-            issue_number: payload!.number,
+            issue_number: payload.number,
             name: label.label,
           })
           .catch((ignored) => {
@@ -60,7 +56,7 @@ async function removeLabels(labels: string[], config: Config): Promise<unknown[]
   );
 }
 
-async function addChecks(checks: StatusCheck[]): Promise<void> {
+async function addChecks(client: OctokitClient, payload: IssuePayload, checks: StatusCheck[]): Promise<void> {
   if (!checks.length) {
     return;
   }
@@ -85,18 +81,38 @@ async function addChecks(checks: StatusCheck[]): Promise<void> {
   ]);
 }
 
-getConfig(client, configPath, configRepo)
-  .then(async (config) => {
-    const labeled = await labels(client, config);
-    const finalLabels = mergeLabels(labeled, config);
+async function run(): Promise<void> {
+  const githubToken = process.env.GITHUB_TOKEN;
+  if (!githubToken) {
+    throw new Error(
+      'GITHUB_TOKEN environment variable is not set. Add `env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}` to your workflow step.',
+    );
+  }
+  const configPath = core.getInput('config-path', { required: true });
+  const configRepo = core.getInput('config-repo');
 
-    return Promise.all([
-      addLabels(finalLabels),
-      removeLabels(finalLabels, config),
-      checks(client, config, finalLabels).then((checks) => addChecks(checks)),
-    ]);
-  })
-  .catch((error) => {
-    core.error(error);
-    core.setFailed(error.message);
-  });
+  const client = github.getOctokit(githubToken);
+  const payload = github.context.payload.pull_request || github.context.payload.issue;
+
+  if (!payload?.number) {
+    throw new Error('Could not get issue_number from pull_request or issue from context');
+  }
+
+  await getConfig(client, configPath, configRepo)
+    .then(async (config) => {
+      const labeled = await labels(client, config);
+      const finalLabels = mergeLabels(labeled, config);
+
+      return Promise.all([
+        addLabels(client, payload, finalLabels),
+        removeLabels(client, payload, finalLabels, config),
+        checks(client, config, finalLabels).then((statusChecks) => addChecks(client, payload, statusChecks)),
+      ]);
+    })
+    .catch((error) => {
+      core.error(error);
+      core.setFailed(error.message);
+    });
+}
+
+run();

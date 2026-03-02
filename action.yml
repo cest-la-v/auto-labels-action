@@ -16,5 +16,13 @@ inputs:
     required: false
 
 runs:
-  using: 'node20'
-  main: 'dist/index.js'
+  using: composite
+  steps:
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version-file: '.bun-version'
+
+    - name: Run action
+      shell: bash
+      run: bun ${{ github.action_path }}/dist/index.js

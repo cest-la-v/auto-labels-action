@@ -57,11 +57,9 @@ describe('labeler', () => {
     jest.spyOn(core, 'debug').mockImplementation(jest.fn());
     jest.spyOn(core, 'setFailed').mockImplementation(jest.fn());
 
-    jest.spyOn(github.context, 'repo', 'get').mockImplementation(() => {
-      return {
-        owner: 'owner-name',
-        repo: 'repo-name',
-      };
+    Object.defineProperty(github.context, 'repo', {
+      get: () => ({ owner: 'owner-name', repo: 'repo-name' }),
+      configurable: true,
     });
 
     github.context.ref = 'refs/heads/some-ref';

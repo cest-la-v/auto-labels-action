@@ -53,14 +53,14 @@ Labels with `removeOnMismatch: true` are removed from the PR/issue when their ma
 ## Developer Workflows
 
 ```bash
-npm test              # Run all Jest tests (ts-jest, no compile step needed)
-npm run build         # tsc → lib/ (validates types but not the action entrypoint)
-npm run package       # ncc build → dist/index.js  ← must run before committing action changes
-npm run lint          # eslint --fix
-npm run format        # prettier --write
+bun test              # Run all Bun-native tests (Jest-compatible, no compile step)
+bun run typecheck     # tsc --noEmit (type validation only)
+bun run package       # bun build → dist/index.js + dist/index.js.map  ← commit before releasing
+bun run lint          # eslint --fix
+bun run format        # prettier --write
 ```
 
-**`dist/index.js` must be committed** — `action.yml` points to it as `main`. Always run `npm run package` after source changes.
+**`dist/index.js` must be committed** — `action.yml` points to it as `main`. Always run `bun run package` after source changes. The build is handled by `scripts/package.ts` using the Bun JS API (named `index.[ext]` via the `naming` option). Source maps are generated as `dist/index.js.map` (equivalent to ncc's `--source-map`). License file extraction (`ncc --license`) has no bun equivalent and is dropped.
 
 ## Testing Conventions
 
@@ -68,6 +68,7 @@ npm run format        # prettier --write
 - Integration tests (`__tests__/labels.test.ts`, `__tests__/config.test.ts`) use a mock GitHub client that reads fixture files from `__tests__/fixtures/` as if they were fetched from the API.
 - Invalid config scenarios live in `__tests__/fixtures/invalid/` and are tested to throw.
 - `@ts-ignore` is expected in test mock clients — do not remove them.
+- **Bun test runner**: uses `bun test` (Jest-compatible API). `jest.spyOn` does not support accessor properties (getters) — use `Object.defineProperty` instead. Example: `Object.defineProperty(github.context, 'repo', { get: () => ({ owner, repo }), configurable: true })`.
 - **Self-referential live test**: `.github/workflows/ci-use.yml` runs the action against its own PRs/issues. It must set `env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}` on the `uses: ./` step — there is no input fallback. Keep this in sync whenever the token or input interface changes.
 
 ## External Dependencies to Know

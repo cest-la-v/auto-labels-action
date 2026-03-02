@@ -18,13 +18,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5.0.0
 
-      - uses: actions/setup-node@v4.4.0
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version-file: '.nvmrc'
+          bun-version-file: '.bun-version'
 
-      - run: npm install
-      - run: npm run build
-      - run: npm run package
+      - run: bun install --frozen-lockfile
+      - run: bun run package
 
       - id: app
         uses: tibdex/github-app-token@v2.1.0
@@ -35,11 +34,11 @@ jobs:
       - uses: peter-evans/create-pull-request@v7.0.8
         with:
           token: ${{ steps.app.outputs.token }}
-          commit-message: 'chore(ci): npm run package'
-          title: 'chore(ci): npm run package'
+          commit-message: 'chore(ci): bun run package'
+          title: 'chore(ci): bun run package'
           body: |
             #### What this PR does / why we need it:
 
-            Updated `./dist/**` files with `npm run package`.
+            Updated `./dist/**` files with `bun run package`.
 
           branch: ci-package
