@@ -40,7 +40,7 @@ labels:
       branch: '^docs/.*'
       commits: '^docs:.*'
 
-  - label: 'test:labeler'
+  - label: 'test:dogfooding'
     removeOnMismatch: true
     include:
       files: '.github/labels.yml'

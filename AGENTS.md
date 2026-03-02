@@ -8,7 +8,7 @@
 
 ```
 src/index.ts         — Entry point: reads inputs, orchestrates labeling + check creation
-src/config.ts       — Parses and validates .github/labeler.yml using io-ts (runtime type-checking)
+src/config.ts       — Parses and validates .github/labels.yml using io-ts (runtime type-checking)
 src/labels.ts       — Evaluates labels per-label (include/exclude/mode), merges with current PR/issue labels
 src/checks.ts       — Evaluates check conditions against matched labels, produces StatusCheck objects
 src/matcher/        — One file per matcher type (title, body, comment, branch, base-branch, commits, files, author)

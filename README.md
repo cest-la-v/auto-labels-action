@@ -6,12 +6,10 @@
 Auto Labels for title, body, comments, commit messages, branch, base branch, author or files.
 Optionally, generate a status check based on the labels.
 
-> **Based on [fuxingloh/multi-labeler](https://github.com/fuxingloh/multi-labeler)** — forked and refactored with additional changes.
-
 ## Features
 
-- Single compiled javascript file, extremely fast. Use fewer credits!
-- Append based labeler, using `.github/labels.yml` as config.
+- Single compiled JavaScript file for fast, lightweight execution.
+- Configuration-driven labeling via `.github/labels.yml`.
 - Automatically fail if `labels.yml` is malformed, type-checked.
 - `removeOnMismatch: true` for conditional labeling — label is removed when the condition no longer matches.
 - `include` / `exclude` fields with optional `mode: ANY | ALL` for fine-grained control.
@@ -64,8 +62,8 @@ permissions:
   checks: write # to generate status
 
 jobs:
-  labeler:
-    name: Labeler
+  auto-labels:
+    name: Auto Labels
     runs-on: ubuntu-latest
     steps:
       # follows semantic versioning. Lock to different version: v1, v1.5, v1.5.0 or use a commit hash.
@@ -139,8 +137,8 @@ on:
     branches: [master, main]
 
 jobs:
-  labeler:
-    name: Labeler
+  auto-labels:
+    name: Auto Labels
     runs-on: ubuntu-latest
     steps:
       - uses: cest-la-v/auto-labels-action@v1
@@ -204,8 +202,8 @@ on:
     branches: [master, main]
 
 jobs:
-  labeler:
-    name: Labeler
+  auto-labels:
+    name: Auto Labels
     runs-on: ubuntu-latest
     steps:
       - uses: cest-la-v/auto-labels-action@v1
@@ -249,8 +247,8 @@ on:
     types: [opened, edited]
 
 jobs:
-  labeler:
-    name: Labeler
+  auto-labels:
+    name: Auto Labels
     runs-on: ubuntu-latest
     steps:
       - uses: cest-la-v/auto-labels-action@v1
@@ -280,8 +278,8 @@ on:
     types: [created, edited]
 
 jobs:
-  labeler:
-    name: Labeler
+  auto-labels:
+    name: Auto Labels
     runs-on: ubuntu-latest
     steps:
       - uses: cest-la-v/auto-labels-action@v1

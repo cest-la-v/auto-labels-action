@@ -86,9 +86,9 @@ export function test(fields: MatcherFields, value: TheType): boolean {
 }
 ```
 
-Register the call in `labeler.ts`'s `collectResults()`.
+Register the call in `labels.ts`'s `collectResults()`.
 
-### Labeler changes (`src/labeler.ts`)
+### Auto Labels changes (`src/labels.ts`)
 
 - `buildContext()` fetches API data once. If a new matcher needs async data, add a `needsX` guard there.
 - Never call the GitHub API outside of `buildContext()`, `fetchFiles()`, or `fetchCommits()`.

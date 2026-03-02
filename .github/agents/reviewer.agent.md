@@ -39,7 +39,7 @@ Fall back to `read` only when you need the exact line content (e.g. to quote in 
 - **Correct conventions**:
   - New matcher fields in `MatcherFields` (not `Include` or `Label` directly)
   - Matcher files export `test(fields: MatcherFields, value): boolean`
-  - `collectResults()` in `labeler.ts` calls the new matcher
+  - `collectResults()` in `labels.ts` calls the new matcher
   - Fixture YAML uses `include:` / `exclude:` (not `matcher:`)
 - **No leftover stubs**: no TODO comments, no placeholder implementations, no dead code.
 - **Scope respected**: no unrelated files touched.

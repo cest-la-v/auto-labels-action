@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "multi-labeler",
+      "name": "auto-labels",
       "dependencies": {
         "@actions/core": "^1.11.1",
         "@actions/github": "^6.0.1",

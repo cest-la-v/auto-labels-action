@@ -50,7 +50,7 @@ async function runLabels(configPath: string): Promise<string[]> {
   return labels(client, config);
 }
 
-describe('labeler', () => {
+describe('labels', () => {
   beforeEach(() => {
     jest.spyOn(core, 'warning').mockImplementation(jest.fn());
     jest.spyOn(core, 'info').mockImplementation(jest.fn());

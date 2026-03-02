@@ -2,14 +2,14 @@ import { test } from '../../src/matcher/files';
 
 // File lists used in test scenarios (matching the original fixture data)
 const files1 = [
-  '.github/labeler.yml',
+  '.github/labels.yml',
   'app/main.js',
   'security/main.js',
   'security/abc/abc.js',
   'setup/abc/abc.xml',
   'setup/abc/abc.js',
 ];
-const files2 = ['.github/labeler.yml'];
+const files2 = ['.github/labels.yml'];
 const files3 = ['app/main.js', 'setup/abc/abc.js', 'test/abc/abc.js'];
 const files4 = ['security/main.js'];
 const files5 = ['security/abc/abc.js'];
@@ -41,8 +41,8 @@ describe('basic (string & array patterns)', () => {
     it('files4 should not match', () => expect(test(fields, files4)).toBe(false));
   });
 
-  describe('labeler (exact file path)', () => {
-    const fields = { files: '.github/labeler.yml' };
+  describe('labels (exact file path)', () => {
+    const fields = { files: '.github/labels.yml' };
     it('files1 should match', () => expect(test(fields, files1)).toBe(true));
     it('files2 should match', () => expect(test(fields, files2)).toBe(true));
     it('files3 should not match', () => expect(test(fields, files3)).toBe(false));

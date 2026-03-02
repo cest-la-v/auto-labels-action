@@ -25,7 +25,7 @@ Read `AGENTS.md` at the start of every session. It is the authoritative source f
 Key structural facts:
 
 - `src/config.ts` — io-ts schema. `MatcherFields` is the base partial type; `Include` extends it with optional `mode`.
-- `src/labeler.ts` — per-label evaluation engine. `buildContext()` gathers API data once; `collectResults()` tests all fields; `evaluateInclude/Exclude/Label()` drive logic.
+- `src/labels.ts` — per-label evaluation engine. `buildContext()` gathers API data once; `collectResults()` tests all fields; `evaluateInclude/Exclude/Label()` drive logic.
 - `src/matcher/*.ts` — one file per matcher, each exports `test(fields: MatcherFields, value): boolean`.
 - `__tests__/matcher/*.test.ts` — unit tests call `test()` directly with plain objects.
 - `__tests__/fixtures/*.yml` and `__tests__/fixtures/invalid/*.yml` — YAML configs for integration tests.
@@ -49,7 +49,7 @@ Fall back to `search` (grep) only for YAML/fixture files or when no file URI is 
 1. **Search first**: use `lsp_workspace_symbols` to locate symbols by name, then `lsp_references` to find every file that uses them. Use `search` (grep) only for YAML/config fixtures.
 2. **Read selectively**: read only the files the search reveals — avoid reading the whole codebase
 3. **Enumerate the hit list**: list every file that must change, and exactly what changes in each (no code, just description)
-4. **Flag dependencies**: note which changes must happen before others (e.g., `config.ts` schema must be updated before `labeler.ts` can use new fields)
+4. **Flag dependencies**: note which changes must happen before others (e.g., `config.ts` schema must be updated before `labels.ts` can use new fields)
 5. **Identify test gaps**: list any new test cases or fixture files needed
 
 ## Output format
@@ -66,7 +66,7 @@ A checklist with the file path, what changes, and any notes:
 
 - [ ] `src/config.ts` — add `X` field to `MatcherFields` t.partial
 - [ ] `src/matcher/x.ts` — create new file; export `test(fields, value): boolean`
-- [ ] `src/labeler.ts` — call `x.test()` inside `collectResults()`
+- [ ] `src/labels.ts` — call `x.test()` inside `collectResults()`
 - [ ] `__tests__/matcher/x.test.ts` — create unit tests for `test()`
 - [ ] `__tests__/fixtures/invalid/matcher-x-invalid.yml` — add invalid config fixture
 
