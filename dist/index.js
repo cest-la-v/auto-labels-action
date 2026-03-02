@@ -22612,7 +22612,7 @@ at ` + path2 + " ",
   exports2.default = prettyReporter;
 });
 
-// src/main.ts
+// src/index.ts
 var core2 = __toESM(require_core(), 1);
 var github4 = __toESM(require_github(), 1);
 
@@ -26821,7 +26821,7 @@ async function checks(client, config, labels2) {
   });
 }
 
-// src/main.ts
+// src/index.ts
 async function addLabels(client, payload, labels2) {
   core2.setOutput("labels", labels2);
   if (!labels2.length) {
@@ -26902,5 +26902,5 @@ async function run() {
 run();
 })
 
-//# debugId=C539D0B44F0ACD1A64756E2164756E21
+//# debugId=11C453752370FF6C64756E2164756E21
 //# sourceMappingURL=index.js.map
