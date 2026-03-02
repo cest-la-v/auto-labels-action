@@ -73,6 +73,14 @@ bun outdated          # Check for outdated dependencies (use this instead of fet
 - **Bun test runner**: uses `bun test` (Jest-compatible API). `jest.spyOn` does not support accessor properties (getters) — use `Object.defineProperty` instead. Example: `Object.defineProperty(github.context, 'repo', { get: () => ({ owner, repo }), configurable: true })`.
 - **Self-referential live test**: `.github/workflows/ci-use.yml` runs the action against its own PRs/issues. It must set `env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}` on the `uses: ./` step — there is no input fallback. Keep this in sync whenever the token or input interface changes.
 
+### Known pitfalls
+
+| Problem | Fix |
+| ------- | --- |
+| `setup/**.xml` not matching deep paths | Use `setup/**/*.xml` — minimatch requires `**/` as a full path segment |
+| `all: ['glob/**']` — files expected to match but don't | `all` = ALL files must match the glob; fix the assertion, not the logic |
+| Stale code appended after new content in file edits | Truncate: `head -N file > /tmp/t && mv /tmp/t file` |
+
 ## External Dependencies to Know
 
 | Package                             | Purpose                                                 |
@@ -98,19 +106,6 @@ The VS Code extension **LSP MCP Bridge** (`sehejjain.lsp-mcp-bridge`) is install
 | Check quick-fixes after an edit         | `lsp_code_actions`      |
 
 Use `search` (grep) only for YAML/fixture files or when no file URI is known yet. Use `read` only when you need exact line content to quote or edit.
-
-## Custom Agents
-
-Four agents live in `.github/agents/`. For non-trivial tasks, switch to the `orchestrator` agent — it sequences the others and enforces plan approval and commit gates. For simple single-file fixes, use the default agent directly.
-
-| Agent          | File                    | Role                                                              | Model             |
-| -------------- | ----------------------- | ----------------------------------------------------------------- | ----------------- |
-| `orchestrator` | `orchestrator.agent.md` | Drives the full plan → implement → review → commit loop           | Claude Sonnet 4.6 |
-| `planner`      | `planner.agent.md`      | Research codebase, produce hit list & plan — no code              | Claude Sonnet 4.6 |
-| `implementer`  | `implementer.agent.md`  | TDD: write failing tests → minimal code → green → lint            | Claude Haiku 4.5  |
-| `reviewer`     | `reviewer.agent.md`     | Read-only review gate; returns APPROVED / NEEDS_REVISION / FAILED | Claude Sonnet 4.6 |
-
-**Scratchpad / task state**: the orchestrator writes progress to `plans/` (gitignored by default). Do not put ephemeral state in `AGENTS.md`.
 
 ## Communication with the End User
 
