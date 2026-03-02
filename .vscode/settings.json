@@ -3,5 +3,11 @@
   // so the YAML extension does not report expected parse errors as problems.
   "files.associations": {
     "**/__tests__/**/malformed-*.{yaml,yml}": "plaintext"
+  },
+  "chat.tools.terminal.autoApprove": {
+    "/^bun run (build|format|lint|test|typecheck) 2>&1$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
   }
 }
