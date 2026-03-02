@@ -41,17 +41,17 @@ labels:
       commits: '^docs:.*'
 
   - label: 'test:dogfooding'
-    removeOnMismatch: true
+    autoRemove: true
     include:
       files: '.github/labels.yml'
 
   - label: 'test:dist'
-    removeOnMismatch: true
+    autoRemove: true
     include:
       files: ['dist/*']
 
   - label: 'test:tests'
-    removeOnMismatch: true
+    autoRemove: true
     include:
       files: ['__tests__/matcher/**', '__tests__/*.ts']
 
@@ -68,7 +68,7 @@ labels:
       comment: '/stale'
 
   - label: 'test: s'
-    removeOnMismatch: true
+    autoRemove: true
     include:
       files:
         count:
@@ -76,7 +76,7 @@ labels:
           lte: 4
 
   - label: 'test: m'
-    removeOnMismatch: true
+    autoRemove: true
     include:
       files:
         count:
@@ -84,7 +84,7 @@ labels:
           lte: 10
 
   - label: 'test: l'
-    removeOnMismatch: true
+    autoRemove: true
     include:
       files:
         count:

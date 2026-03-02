@@ -38,8 +38,8 @@ async function removeLabels(
   return Promise.all(
     (config.labels || [])
       .filter((label) => {
-        // removeOnMismatch: remove if no longer in final matched label set
-        return label.removeOnMismatch && !labels.includes(label.label);
+        // autoRemove: remove if no longer in final matched label set
+        return label.autoRemove && !labels.includes(label.label);
       })
       .map((label) => {
         return client.rest.issues

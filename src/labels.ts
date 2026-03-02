@@ -35,8 +35,8 @@ export function mergeLabels(labels: string[], config: Config): string[] {
 
   const removals = (config.labels || [])
     .filter((label) => {
-      // removeOnMismatch: remove if no longer matched and currently on the PR/issue
-      return label.removeOnMismatch && !labels.includes(label.label) && currents.includes(label.label);
+      // autoRemove: remove if no longer matched and currently on the PR/issue
+      return label.autoRemove && !labels.includes(label.label) && currents.includes(label.label);
     })
     .map((value) => value.label);
 

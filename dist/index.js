@@ -22487,7 +22487,7 @@ function mergeLabels(labels, config) {
   const payload = context3.payload.pull_request || context3.payload.issue;
   const currents = payload?.labels?.map((label) => label.name) || [];
   const removals = (config.labels || []).filter((label) => {
-    return label.removeOnMismatch && !labels.includes(label.label) && currents.includes(label.label);
+    return label.autoRemove && !labels.includes(label.label) && currents.includes(label.label);
   }).map((value) => value.label);
   return import_lodash.difference(import_lodash.uniq(import_lodash.concat(labels, currents)), removals);
 }
@@ -25262,7 +25262,7 @@ var Label = t.intersection([
     label: t.string
   }),
   t.partial({
-    removeOnMismatch: t.boolean,
+    autoRemove: t.boolean,
     include: Include,
     exclude: MatcherFields
   })
@@ -25383,7 +25383,7 @@ async function removeLabels(client, payload, labels2, config) {
     return [];
   }
   return Promise.all((config.labels || []).filter((label) => {
-    return label.removeOnMismatch && !labels2.includes(label.label);
+    return label.autoRemove && !labels2.includes(label.label);
   }).map((label) => {
     return client.rest.issues.removeLabel({
       owner: context2.repo.owner,
@@ -25445,5 +25445,5 @@ async function run() {
 run();
 })
 
-//# debugId=383509DD6E46DD3464756E2164756E21
+//# debugId=BA5BD7D10C6EA6FA64756E2164756E21
 //# sourceMappingURL=index.js.map

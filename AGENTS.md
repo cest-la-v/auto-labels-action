@@ -24,7 +24,7 @@ Key rules:
 
 - A label with no `include` is **never** auto-added.
 - `exclude` with no fields never excludes.
-- `removeOnMismatch: true` on a label causes removal when the label no longer matches.
+- `autoRemove: true` on a label causes removal when the label no longer matches.
 - `include.mode`: `ALL` (default) = every defined field must match; `ANY` = at least one must match.
 
 ## Key Patterns
@@ -43,9 +43,9 @@ It reads its field from `fields` (e.g. `fields.title`), returns `false` if undef
 
 `src/config.ts` defines the schema with `io-ts` codecs. Extend `MatcherFields` (a `t.partial`) to add new matcher fields — the type is both the runtime validator and the TypeScript type via `t.TypeOf<typeof MatcherFields>`. `Include` extends `MatcherFields` with an optional `mode` field. Validation errors are surfaced via `io-ts-reporters` with a descriptive message.
 
-### `removeOnMismatch: true` labels
+### `autoRemove: true` labels
 
-Labels with `removeOnMismatch: true` are removed from the PR/issue when their matcher no longer matches. Removal is skipped for `issue_comment` and `push` events — only `pull_request`, `pull_request_target`, and `issue` events trigger removal.
+Labels with `autoRemove: true` are removed from the PR/issue when their matcher no longer matches. Removal is skipped for `issue_comment` and `push` events — only `pull_request`, `pull_request_target`, and `issue` events trigger removal.
 
 ### Checks
 

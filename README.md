@@ -11,7 +11,7 @@ Optionally, generate a status check based on the labels.
 - Single compiled JavaScript file for fast, lightweight execution.
 - Configuration-driven labeling via `.github/labels.yml`.
 - Automatically fail if `labels.yml` is malformed, type-checked.
-- `removeOnMismatch: true` for conditional labeling — label is removed when the condition no longer matches.
+- `autoRemove: true` for conditional labeling — label is removed when the condition no longer matches.
 - `include` / `exclude` fields with optional `mode: ANY | ALL` for fine-grained control.
 - Regex Matcher:
   - PR/Issue title
@@ -83,7 +83,7 @@ version: v1
 
 labels:
   - label: 'feat'
-    removeOnMismatch: true # remove label if include no longer matches, default: false (pull_request/issue only)
+    autoRemove: true # remove label if include no longer matches, default: false (pull_request/issue only)
     include:
       mode: ANY # ANY: at least one field must match. ALL (default): all defined fields must match.
       title: '^feat:.*'
@@ -320,7 +320,7 @@ Each entry in `labels` defines when a label is added or removed.
 ```yml
 labels:
   - label: 'my-label' # required — GitHub label name
-    removeOnMismatch: true # optional (default: false) — remove when include no longer matches
+    autoRemove: true # optional (default: false) — remove when include no longer matches
     include: # when this matches, add the label (a label with no include is never added)
       mode: ANY # ANY = at least one field must match; ALL (default) = all fields must match
       title: '^feat:.*'
@@ -337,9 +337,9 @@ Both `include` and `exclude` accept the same set of matcher fields. `exclude` ta
 - `ALL` (default) — every defined field must match
 - `ANY` — at least one defined field must match
 
-### `removeOnMismatch`
+### `autoRemove`
 
-When `removeOnMismatch: true`, the label is removed from the PR/issue when the `include` condition no longer matches. Only active on `pull_request`, `pull_request_target`, and `issue` events (not `issue_comment` or `push`).
+When `autoRemove: true`, the label is removed from the PR/issue when the `include` condition no longer matches. Only active on `pull_request`, `pull_request_target`, and `issue` events (not `issue_comment` or `push`).
 
 ## Matchers
 
@@ -426,13 +426,13 @@ If you use this to audit changes, take note of the 3000 files limitation.
 ```yml
 labels:
   - label: 'github'
-    removeOnMismatch: true
+    autoRemove: true
     include:
       # shorthand for any: [".github/**"]
       files: '.github/**'
 
   - label: 'security'
-    removeOnMismatch: true
+    autoRemove: true
     include:
       # shorthand for any: ["web/security/**", "security/**"]
       files: ['web/security/**', 'security/**']
@@ -443,7 +443,7 @@ labels:
 ```yml
 labels:
   - label: 'size: s'
-    removeOnMismatch: true
+    autoRemove: true
     include:
       files:
         count:
@@ -451,7 +451,7 @@ labels:
           lte: 4
 
   - label: 'size: m'
-    removeOnMismatch: true
+    autoRemove: true
     include:
       files:
         count:
@@ -459,7 +459,7 @@ labels:
           lte: 10
 
   - label: 'size: l'
-    removeOnMismatch: true
+    autoRemove: true
     include:
       files:
         count:
@@ -471,14 +471,14 @@ labels:
 ```yml
 labels:
   - label: 'ci'
-    removeOnMismatch: true
+    autoRemove: true
     include:
       files:
         any: ['.github/workflow/**', '.circleci/**']
         all: ['!app/**']
 
   - label: 'attention'
-    removeOnMismatch: true
+    autoRemove: true
     include:
       files:
         any: ['app/**']

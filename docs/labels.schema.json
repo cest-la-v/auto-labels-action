@@ -126,7 +126,7 @@
           "type": "string",
           "description": "The GitHub label name to add or remove."
         },
-        "removeOnMismatch": {
+        "autoRemove": {
           "type": "boolean",
           "default": false,
           "description": "When true, remove the label if the include condition no longer matches (pull_request / issue events only)."
