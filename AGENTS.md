@@ -21,6 +21,7 @@ src/matcher/        — One file per matcher type (title, body, comment, branch,
 Full JSON Schema with field-level descriptions: [docs/labels.schema.json](docs/labels.schema.json).
 
 Key rules:
+
 - A label with no `include` is **never** auto-added.
 - `exclude` with no fields never excludes.
 - `removeOnMismatch: true` on a label causes removal when the label no longer matches.

@@ -18,8 +18,8 @@ permissions:
   contents: read
 
 jobs:
-  typecheck:
-    name: Typecheck
+  ci:
+    name: CI
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -36,38 +36,8 @@ jobs:
       - name: Typecheck
         run: bun run typecheck
 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5.0.0
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version-file: '.bun-version'
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
       - name: Test
         run: bun test
-
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5.0.0
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version-file: '.bun-version'
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
 
       - name: Prettier
         run: bunx prettier --check .

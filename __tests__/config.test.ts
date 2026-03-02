@@ -30,7 +30,6 @@ describe('valid config', () => {
   it('semantic-release.yml', function () {
     expect(() => parseConfig('semantic-release.yml')).not.toThrowError();
   });
-
 });
 
 describe('invalid checks', () => {
@@ -112,5 +111,3 @@ describe('invalid labels matcher', () => {
     expect(() => parseConfig('invalid/matcher-title-invalid.yml')).toThrow(/labels\.yml parse error:/);
   });
 });
-
-

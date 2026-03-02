@@ -31,6 +31,7 @@ Optionally, generate a status check based on the labels.
   - Any label match
   - All label match
   - None label match
+
 ## Usage
 
 #### `.github/workflows/labels.yml`
@@ -320,12 +321,12 @@ Each entry in `labels` defines when a label is added or removed.
 
 ```yml
 labels:
-  - label: 'my-label'       # required — GitHub label name
-    removeOnMismatch: true  # optional (default: false) — remove when include no longer matches
-    include:                # when this matches, add the label (a label with no include is never added)
-      mode: ANY             # ANY = at least one field must match; ALL (default) = all fields must match
+  - label: 'my-label' # required — GitHub label name
+    removeOnMismatch: true # optional (default: false) — remove when include no longer matches
+    include: # when this matches, add the label (a label with no include is never added)
+      mode: ANY # ANY = at least one field must match; ALL (default) = all fields must match
       title: '^feat:.*'
-    exclude:                # when this matches, skip adding the label (overrides include)
+    exclude: # when this matches, skip adding the label (overrides include)
       author: 'dependabot[bot]'
 ```
 
@@ -334,6 +335,7 @@ labels:
 Both `include` and `exclude` accept the same set of matcher fields. `exclude` takes precedence — if any exclude field matches, the label is not added regardless of `include`.
 
 `include.mode` controls how multiple `include` fields are combined:
+
 - `ALL` (default) — every defined field must match
 - `ANY` — at least one defined field must match
 

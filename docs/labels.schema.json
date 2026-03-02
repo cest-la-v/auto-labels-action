@@ -54,10 +54,7 @@
           "description": "Regex or plain string matched against the PR base branch name."
         },
         "author": {
-          "oneOf": [
-            { "type": "string" },
-            { "type": "array", "items": { "type": "string" } }
-          ],
+          "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }],
           "description": "GitHub login(s) to match against the PR/issue author. A single string or a list."
         },
         "files": {
@@ -93,7 +90,7 @@
                   "properties": {
                     "lte": { "type": "number", "description": "File count ≤ this value." },
                     "gte": { "type": "number", "description": "File count ≥ this value." },
-                    "eq":  { "type": "number", "description": "File count = this value." },
+                    "eq": { "type": "number", "description": "File count = this value." },
                     "neq": { "type": "number", "description": "File count ≠ this value." }
                   }
                 }
@@ -198,6 +195,6 @@
           }
         }
       }
-    },
+    }
   }
 }
