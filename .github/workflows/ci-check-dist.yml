@@ -1,6 +1,6 @@
 # `dist/index.js` is the bundled entrypoint for the action (built from src/).
 # We need to make sure the checked-in `dist/` actually matches what we expect it to be.
-name: Check dist
+name: CI Check dist
 
 on:
   push:
