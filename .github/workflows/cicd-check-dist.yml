@@ -49,10 +49,3 @@ jobs:
             git diff --stat
             exit 1
           fi
-
-      - name: Upload unexpected dist/ as artifact
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() && steps.diff.conclusion == 'failure' }}
-        with:
-          name: dist
-          path: dist/
