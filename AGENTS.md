@@ -59,6 +59,7 @@ bun run typecheck     # tsc --noEmit (type validation only)
 bun run build         # bun build → dist/index.js + dist/index.js.map  ← commit before releasing
 bun run lint          # eslint --fix
 bun run format        # prettier --write
+bun outdated          # Check for outdated dependencies (use this instead of fetching npm pages)
 ```
 
 **`dist/index.js` must be committed** — `action.yml` points to it as `main`. Always run `bun run build` after source changes. The build is handled by `build.ts` using the Bun JS API. Source maps are generated as `dist/index.js.map` (equivalent to ncc's `--source-map`). License file extraction (`ncc --license`) has no bun equivalent and is dropped.

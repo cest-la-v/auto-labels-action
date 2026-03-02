@@ -43,6 +43,14 @@ module.exports = [
     },
   },
   {
+    plugins: {
+      'unused-imports': require('eslint-plugin-unused-imports'),
+    },
+    rules: {
+      'unused-imports/no-unused-imports': 'error',
+    },
+  },
+  {
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
     },
