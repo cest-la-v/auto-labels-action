@@ -7,14 +7,14 @@
 ## Architecture
 
 ```
-src/main.ts         — Entry point: reads inputs, orchestrates labeling + check creation
+src/index.ts         — Entry point: reads inputs, orchestrates labeling + check creation
 src/config.ts       — Parses and validates .github/labeler.yml using io-ts (runtime type-checking)
 src/labels.ts       — Evaluates labels per-label (include/exclude/mode), merges with current PR/issue labels
 src/checks.ts       — Evaluates check conditions against matched labels, produces StatusCheck objects
 src/matcher/        — One file per matcher type (title, body, comment, branch, base-branch, commits, files, author)
 ```
 
-**Data flow:** `main.ts` → `getConfig()` → `labels()` → `buildContext()` (gathers PR data once) → per-label `evaluateLabel()` → `mergeLabels()` → add/remove via GitHub API → `checks()` → `createCommitStatus` per check.
+**Data flow:** `index.ts` → `getConfig()` → `labels()` → `buildContext()` (gathers PR data once) → per-label `evaluateLabel()` → `mergeLabels()` → add/remove via GitHub API → `checks()` → `createCommitStatus` per check.
 
 ## Config Schema
 
@@ -55,12 +55,12 @@ Labels with `removeOnMismatch: true` are removed from the PR/issue when their ma
 ```bash
 bun test              # Run all Bun-native tests (Jest-compatible, no compile step)
 bun run typecheck     # tsc --noEmit (type validation only)
-bun run package       # bun build → dist/index.js + dist/index.js.map  ← commit before releasing
+bun run build         # bun build → dist/index.js + dist/index.js.map  ← commit before releasing
 bun run lint          # eslint --fix
 bun run format        # prettier --write
 ```
 
-**`dist/index.js` must be committed** — `action.yml` points to it as `main`. Always run `bun run package` after source changes. The build is handled by `scripts/package.ts` using the Bun JS API (named `index.[ext]` via the `naming` option). Source maps are generated as `dist/index.js.map` (equivalent to ncc's `--source-map`). License file extraction (`ncc --license`) has no bun equivalent and is dropped.
+**`dist/index.js` must be committed** — `action.yml` points to it as `main`. Always run `bun run build` after source changes. The build is handled by `build.ts` using the Bun JS API. Source maps are generated as `dist/index.js.map` (equivalent to ncc's `--source-map`). License file extraction (`ncc --license`) has no bun equivalent and is dropped.
 
 ## Testing Conventions
 

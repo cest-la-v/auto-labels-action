@@ -94,7 +94,7 @@ Evaluate the verdict:
    - Bullet describing change 2
    ```
 
-   If any `src/` files changed, remind the user: **run `npm run package` before committing** (`dist/index.js` must stay in sync).
+   If any `src/` files changed, remind the user: **run `bun run build` before committing** (`dist/index.js` must stay in sync).
 
 3. Write `plans/<task-name>-phase-N-complete.md` with the phase summary and commit message.
 4. **MANDATORY STOP** — wait for the user to make the commit and confirm before proceeding.

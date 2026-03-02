@@ -1,9 +1,8 @@
 #!/usr/bin/env bun
 
 const result = await Bun.build({
-  entrypoints: ['./src/main.ts'],
+  entrypoints: ['./src/index.ts'],
   outdir: './dist',
-  naming: '[dir]/index.[ext]',
   target: 'bun',
   format: 'cjs',
   sourcemap: 'linked',
