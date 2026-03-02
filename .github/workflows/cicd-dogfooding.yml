@@ -1,4 +1,4 @@
-name: CI Use
+name: Dogfooding
 
 on:
   pull_request:
